@@ -1,3 +1,5 @@
+# Do not track the config file (as it contains passwords)
+config.groovy
 
 # Created by https://www.gitignore.io/api/linux,gradle,windows,intellij
 # Edit at https://www.gitignore.io/?templates=linux,gradle,windows,intellij

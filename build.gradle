@@ -1,0 +1,30 @@
+group 'de.servicekommune'
+version '1.0-SNAPSHOT'
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath "io.ratpack:ratpack-gradle:1.7.5"
+    classpath 'se.transmode.gradle:gradle-docker:1.2'
+  }
+}
+
+apply plugin: "io.ratpack.ratpack-groovy"
+apply plugin: "idea"
+apply plugin: 'groovy'
+apply plugin: 'docker'
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  runtime "org.slf4j:slf4j-simple:1.7.25"
+  compile 'org.mariadb.jdbc:mariadb-java-client:2.5.2'
+}
+
+distDocker {
+  exposePort(5050)
+}
