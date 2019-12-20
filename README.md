@@ -9,7 +9,17 @@ A simple Ratpack REST Service to allow tracking of SBW events
    export DB_USERNAME="skTrackingService";
    export DB_PASSWORD="<YOUR PASSWORD HERE>";
    ```
+   (If you use another database, change the settings above.)
 1. Run in development mode with auto-refresh:
    ```bash
    ./gradlew -t run
+   ```
+
+## Run tests
+Very similar to running in dev mode
+   ```bash
+   export DB_URL="jdbc:mysql://localhost:3306/skTracker";
+   export DB_USERNAME="skTrackingService";
+   export DB_PASSWORD="<YOUR PASSWORD HERE>";
+   ./gradlew test
    ```
