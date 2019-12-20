@@ -21,10 +21,18 @@ repositories {
 }
 
 dependencies {
-  runtime "org.slf4j:slf4j-simple:1.7.25"
   compile 'org.mariadb.jdbc:mariadb-java-client:2.5.2'
+  testCompile 'org.spockframework:spock-core:1.3-groovy-2.5'
+  runtime "org.slf4j:slf4j-simple:1.7.25"
 }
 
 distDocker {
   exposePort(5050)
+}
+
+// Show test results in console
+test {
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
 }
