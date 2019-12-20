@@ -45,26 +45,26 @@ ratpack {
       // verify parameters
       if (processInstanceId == null) {
         ctx.response.status(400)
-        render(json(["errorMsg": "Paramter 'processInstanceId' is required."]))
+        render(json(["errorMsg": "Parameter 'processInstanceId' is required"]))
         return
       }
       if (!(processInstanceId.isInteger())) {
         ctx.response.status(400)
-        render(json(["errorMsg": "'processInstanceId' must be an integer"]))
+        render(json(["errorMsg": "Parameter 'processInstanceId' must be an integer"]))
         return
       }
       if (processId.length() > 190) {
         ctx.response.status(400)
-        render(json(["errorMessage": "'processId' must bes shorter than 190 characters"]))
+        render(json(["errorMessage": "Parameter 'processId' must be shorter than 190 characters"]))
       }
       if (eventId.length() > 190) {
         ctx.response.status(400)
-        render(json(["errorMessage": "'eventId' must bes shorter than 190 characters"]))
+        render(json(["errorMessage": "Parameter 'eventId' must be shorter than 190 characters"]))
       }
       if (userId != null) {
         if (userId.length() > 190) {
           ctx.response.status(400)
-          render(json(["errorMessage": "'userId' must bes shorter than 190 characters"]))
+          render(json(["errorMessage": "Parameter 'userId' must be shorter than 190 characters"]))
         }
       }
 
