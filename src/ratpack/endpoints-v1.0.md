@@ -59,7 +59,7 @@ HTTP 400 when parameters are missing or invalid, returns a json document with a 
 
 # GET /api/v1.0/processes/{processId}/events/{eventId}/sum
 
-Get the sum of all events for a given process and event ID.
+Get the sum of the given events for a given process and event ID.
 
 ## parameters
 
@@ -73,17 +73,18 @@ Get the sum of all events for a given process and event ID.
 
 * `timeFrom`
   **optional**
-  A UNIX timestamp marking the point in time when events are included in the result.
+  A UNIX timestamp marking the point in time when events are included in the result (inclusive).
   If missing, all events are included (as long as they are not filtered by another parameter)
 
 * `timeUntil`
   **optional**
-  A UNIX timestamp marking the point in time when events are no longer included in the result.
+  A UNIX timestamp marking the point in time when events are no longer included in the result (inclusive).
   If missing, all events are included (as long as they are not filtered by another parameter)
 
 ## response
 
 HTTP 200 on a successful call, returns a unstructured numbers which describes how often this event was tracked.
+(application type is still json)
 Example:
 ```
 5
@@ -92,8 +93,6 @@ Example:
 HTTP 401 when no `Authorization` header was provided, or the username-password combination didn't match.
 
 HTTP 403 when the supplied user (in the `Authorization` header) is not allowed to access this `processId`.
-
-HTTP 404 when the supplied eventId for the supplied processId has no events.
 
 # GET /api/v1.0/processes/{processId}/sum
 
@@ -127,8 +126,6 @@ HTTP 200 on a successful call, returns a json document with all tracked event ID
 HTTP 401 when no `Authorization` header was provided, or the username-password combination didn't match.
 
 HTTP 403 when the supplied user (in the `Authorization` header) is not allowed to access this `processId`.
-
-HTTP 404 when the supplied processId has no events.
 
 # GET /api/v1.0/processes/{processId}
 
@@ -175,5 +172,3 @@ HTTP 200 on a successful call, returns a json document with all tracked events E
 HTTP 401 when no `Authorization` header was provided, or the username-password combination didn't match.
 
 HTTP 403 when the supplied user (in the `Authorization` header) is not allowed to access this `processId`
-
-HTTP 404 when the supplied processId has no events.
