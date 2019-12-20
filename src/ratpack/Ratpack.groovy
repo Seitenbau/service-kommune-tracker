@@ -1,4 +1,7 @@
 import groovy.sql.Sql
+import org.commonmark.node.Node
+import org.commonmark.parser.Parser
+import org.commonmark.renderer.html.HtmlRenderer
 import ratpack.handling.Context
 
 import static ratpack.groovy.Groovy.ratpack
@@ -14,8 +17,19 @@ requiredEnvVariables.each {
 
 ratpack {
   handlers {
-    get {
-      render "This is the Service-Kommune Tracking API."
+    get { Context ctx ->
+      ctx.response.contentType("text/html")
+      render("This is the Service-Kommune Tracking API.<br><a href=\"api/v1.0\">Documentation</a>")
+    }
+
+    get("api/v1.0") { Context ctx ->
+      // Parse markdown
+      String documentationAsMarkdown = ctx.file("endpoints-v1.0.md").text
+      Node document = Parser.builder().build().parse(documentationAsMarkdown)
+      String html = HtmlRenderer.builder().build().render(document)
+
+      ctx.response.contentType("text/html")
+      render(html)
     }
 
     post("api/v1.0/processes/:processId/events/:eventId") { Context ctx ->
