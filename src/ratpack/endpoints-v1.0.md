@@ -12,7 +12,7 @@ Example: For the user "aladdin" with the password "opensesame", you should submi
 
 Not determined yet: Who is responsible for the permissions? For now: contact dennis.weber@seitenbau.com
 
-# POST /processes/{processId}/events/{eventId}
+# POST /api/v1.0/processes/{processId}/events/{eventId}
 
 Track an event.
 
@@ -57,7 +57,7 @@ HTTP 400 when parameters are missing or invalid, returns a json document with a 
 }
 ```
 
-# GET /processes/{processId}/events/{eventId}/sum
+# GET /api/v1.0/processes/{processId}/events/{eventId}/sum
 
 Get the sum of all events for a given process and event ID.
 
@@ -95,7 +95,7 @@ HTTP 403 when the supplied user (in the `Authorization` header) is not allowed t
 
 HTTP 404 when the supplied eventId for the supplied processId has no events.
 
-# GET /processes/{processId}/sum
+# GET /api/v1.0/processes/{processId}/sum
 
 Get the sum of all events for a given process.
 
@@ -130,7 +130,7 @@ HTTP 403 when the supplied user (in the `Authorization` header) is not allowed t
 
 HTTP 404 when the supplied processId has no events.
 
-# GET /processes/{processId}
+# GET /api/v1.0/processes/{processId}
 
 Get all the details of all events for a given process. Warning: Might be a large result!
 
