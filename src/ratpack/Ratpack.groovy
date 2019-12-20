@@ -1,3 +1,4 @@
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.commonmark.node.Node
 import org.commonmark.parser.Parser
@@ -34,7 +35,7 @@ ratpack {
 
     post("api/v1.0/processes/:processId/events/:eventId") { Context ctx ->
 
-      // specify type for path parameters
+      // get path parameters
       String processId = pathTokens.processId
       String eventId = pathTokens.eventId
 
@@ -77,7 +78,43 @@ ratpack {
       ctx.response.status(201)
       ctx.response.send() // No further content
     }
+
+    get("api/v1.0/processes/:processId/events/:eventId/sum") { Context ctx ->
+      // TODO: Add authorization checks to this endpoint
+      // TODO: Check that timeFrom and timeUntil are valid timestamps (if provided)
+      // TODO: Add tests
+
+      // get path parameters
+      String processId = pathTokens.processId
+      String eventId = pathTokens.eventId
+
+      // get GET parameters
+      Integer timeFrom = ctx.request.queryParams.timeFrom as Integer
+      Integer timeUntil = ctx.request.queryParams.timeUntil as Integer
+
+      // get count from database
+      Sql sql = getNewSqlConnection()
+      String selectStatement = """SELECT COUNT(*) as amountTrackedEvent
+              FROM skTracker.trackedEvents
+              WHERE processId = ?
+                AND eventId   = ?"""
+      List filterValues = [processId, eventId]
+      if (timeFrom != null) {
+        selectStatement += " AND timestamp >= FROM_UNIXTIME(?)"
+        filterValues.add(timeFrom.toString())
+      }
+      if (timeUntil != null) {
+        selectStatement += " AND timestamp <= FROM_UNIXTIME(?)"
+        filterValues.add(timeUntil.toString())
+      }
+      GroovyRowResult row = sql.firstRow(selectStatement, filterValues)
+
+      // return result to user
+      ctx.response.status(200)
+      render(json(row.get("amountTrackedEvent")))
+    }
   }
+  println("paths set.")
 }
 
 static Sql getNewSqlConnection() {
