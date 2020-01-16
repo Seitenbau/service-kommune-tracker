@@ -5,9 +5,16 @@ import spock.lang.Specification
 
 class StartupSpecification extends Specification {
 
-  ServerBackedApplicationUnderTest aut = new GroovyRatpackMainApplicationUnderTest()
+  ServerBackedApplicationUnderTest aut
   @Delegate
-  TestHttpClient client = testHttpClient(aut)
+  TestHttpClient client
+
+  def setup() {
+    DatabaseHelper.setupTestDatabase()
+
+    aut = new GroovyRatpackMainApplicationUnderTest()
+    client = testHttpClient(aut)
+  }
 
   def "Server is starting"() {
     when:

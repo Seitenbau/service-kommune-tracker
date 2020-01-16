@@ -8,11 +8,18 @@ import ratpack.handling.Context
 import static ratpack.groovy.Groovy.ratpack
 import static ratpack.jackson.Jackson.json
 
-// Check required environment variables
-List<String> requiredEnvVariables = ["DB_URL", "DB_USERNAME", "DB_PASSWORD"]
-requiredEnvVariables.each {
-  if (System.getenv(it) == null) {
-    throw new RuntimeException("Required environment variable '$it' is not set.")
+// Check required database config variables
+List<String> requiredDbConfigValues = ["DB_URL", "DB_USERNAME", "DB_PASSWORD", "DB_DRIVER"]
+requiredDbConfigValues.each {
+  if (ServerConfig.dbConnectionData.get(it) == null) {
+    // variable is not configured. Maybe we have config data in environment variables?
+
+    String valueFromEnvVariable = System.getenv(it)
+    if (valueFromEnvVariable == null) {
+      throw new RuntimeException("Required environment variable '$it' is not set.")
+    } else {
+      ServerConfig.dbConnectionData.put(it, valueFromEnvVariable)
+    }
   }
 }
 
@@ -70,7 +77,7 @@ ratpack {
       }
 
       // Store result in database
-      Sql sql = getNewSqlConnection()
+      Sql sql = ServerConfig.getNewSqlConnection()
       sql.execute("INSERT INTO trackedEvents (processId, eventId, processInstanceId, userId) VALUES (?, ?, ?, ?)",
               [processId, eventId, processInstanceId, userId])
       sql.commit()
@@ -93,9 +100,9 @@ ratpack {
       Integer timeUntil = ctx.request.queryParams.timeUntil as Integer
 
       // get count from database
-      Sql sql = getNewSqlConnection()
+      Sql sql = ServerConfig.getNewSqlConnection()
       String selectStatement = """SELECT COUNT(*) as amountTrackedEvent
-              FROM skTracker.trackedEvents
+              FROM trackedEvents
               WHERE processId = ?
                 AND eventId   = ?"""
       List filterValues = [processId, eventId]
@@ -115,12 +122,4 @@ ratpack {
     }
   }
   println("Service-Kommune Tracking Server is up and running! ✅")
-}
-
-static Sql getNewSqlConnection() {
-
-  return Sql.newInstance(System.getenv("DB_URL"),
-          System.getenv("DB_USERNAME"),
-          System.getenv("DB_PASSWORD"),
-          "org.mariadb.jdbc.Driver")
 }

@@ -5,9 +5,16 @@ import spock.lang.Specification
 
 class GetSumOfGivenEventSpecification extends Specification {
 
-  ServerBackedApplicationUnderTest aut = new GroovyRatpackMainApplicationUnderTest()
+  ServerBackedApplicationUnderTest aut
   @Delegate
-  TestHttpClient client = testHttpClient(aut)
+  TestHttpClient client
+
+  def setup() {
+    DatabaseHelper.setupTestDatabase()
+
+    aut = new GroovyRatpackMainApplicationUnderTest()
+    client = testHttpClient(aut)
+  }
 
 
   def "Get the sum of a given Event"() {
@@ -21,7 +28,7 @@ class GetSumOfGivenEventSpecification extends Specification {
 
     then:
     response.statusCode == 200
-    sum >= 0 // the test database should always contain entries for "testprozess" and "testevent"
+    sum > 0 // the test database should always contain entries for "testprozess" and "testevent"
   }
 
   def "Adding events increases the sum of events"() {
