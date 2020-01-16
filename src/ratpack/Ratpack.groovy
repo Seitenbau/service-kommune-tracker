@@ -64,15 +64,18 @@ ratpack {
       if (processId.length() > 190) {
         ctx.response.status(400)
         render(json(["errorMessage": "Parameter 'processId' must be shorter than 190 characters"]))
+        return
       }
       if (eventId.length() > 190) {
         ctx.response.status(400)
         render(json(["errorMessage": "Parameter 'eventId' must be shorter than 190 characters"]))
+        return
       }
       if (userId != null) {
         if (userId.length() > 190) {
           ctx.response.status(400)
           render(json(["errorMessage": "Parameter 'userId' must be shorter than 190 characters"]))
+          return
         }
       }
 
