@@ -114,7 +114,7 @@ ratpack {
       render(json(row.get("amountTrackedEvent")))
     }
   }
-  println("paths set.")
+  println("Service-Kommune Tracking Server is up and running! ✅")
 }
 
 static Sql getNewSqlConnection() {

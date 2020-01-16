@@ -16,19 +16,44 @@ class GetSumOfGivenEventSpecification extends Specification {
     String eventId = "testevent"
 
     when:
-
     get("api/v1.0/processes/$processId/events/$eventId/sum")
+    int sum = Integer.parseInt(response.body.text)
 
     then:
     response.statusCode == 200
-    // TODO: Tests should use a database for test data only. So we can verify the response.body here as well.
+    sum >= 0 // the test database should always contain entries for "testprozess" and "testevent"
+  }
+
+  def "Adding events increases the sum of events"() {
+    given:
+    String processId = "testprozess"
+    String eventId = "testevent"
+    int processInstanceId = 123456
+
+    when:
+    // Get current state
+    get("api/v1.0/processes/$processId/events/$eventId/sum")
+    int oldSum = Integer.parseInt(response.body.text)
+
+    // Track new event
+    params({ params ->
+      params.put("processInstanceId", processInstanceId)
+    })
+    post("/api/v1.0/processes/$processId/events/$eventId")
+
+    // Get new state
+    get("api/v1.0/processes/$processId/events/$eventId/sum")
+    int newSum = Integer.parseInt(response.body.text)
+
+    then:
+    newSum - oldSum == 1
   }
 
   def "Get the sum of a given Event with timeFrom"() {
     given:
     String processId = "testprozess"
     String eventId = "testevent"
-    String timeFrom = "" // TODO: Use an actual value
+    String timeFrom = "2145916800" // 2038-01-01 00:00:00+00:00 i.e. a day far in the future
 
     when:
     params({params->
@@ -37,8 +62,8 @@ class GetSumOfGivenEventSpecification extends Specification {
     get("api/v1.0/processes/$processId/events/$eventId/sum")
 
     then:
-    response.statusCode == 200
-    // TODO: Tests should use a database for test data only. So we can verify the response.body here as well.
+    int sum = Integer.parseInt(response.body.text)
+    sum == 0
   }
 
   // TODO: Test for timeUntil
