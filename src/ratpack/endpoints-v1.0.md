@@ -94,6 +94,8 @@ HTTP 401 when no `Authorization` header was provided, or the username-password c
 
 HTTP 403 when the supplied user (in the `Authorization` header) is not allowed to access this `processId`.
 
+HTTP 400 when parameters do not have the right format
+
 # GET /api/v1.0/processes/{processId}/sum
 
 Get the sum of all events for a given process.

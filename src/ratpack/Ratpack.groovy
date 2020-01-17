@@ -91,16 +91,28 @@ ratpack {
 
     get("api/v1.0/processes/:processId/events/:eventId/sum") { Context ctx ->
       // TODO: Add authorization checks to this endpoint
-      // TODO: Check that timeFrom and timeUntil are valid timestamps (if provided)
-      // TODO: Add tests
 
       // get path parameters
       String processId = pathTokens.processId
       String eventId = pathTokens.eventId
 
       // get GET parameters
-      Integer timeFrom = ctx.request.queryParams.timeFrom as Integer
-      Integer timeUntil = ctx.request.queryParams.timeUntil as Integer
+      Integer timeFrom
+      try {
+        timeFrom = ctx.request.queryParams.timeFrom as Integer
+      } catch (NumberFormatException ignored) {
+        ctx.response.status(400)
+        render(json(["errorMsg": "Parameter 'timeFrom' must be a valid integer smaller than ${Integer.MAX_VALUE}".toString()]))
+        return
+      }
+      Integer timeUntil
+      try {
+        timeUntil = ctx.request.queryParams.timeUntil as Integer
+      } catch (NumberFormatException ignored) {
+        ctx.response.status(400)
+        render(json(["errorMsg": "Parameter 'timeUntil' must be a valid integer smaller than ${Integer.MAX_VALUE}".toString()]))
+        return
+      }
 
       // get count from database
       Sql sql = ServerConfig.getNewSqlConnection()

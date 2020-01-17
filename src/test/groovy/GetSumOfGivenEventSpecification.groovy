@@ -73,10 +73,40 @@ class GetSumOfGivenEventSpecification extends Specification {
     sum == 0
   }
 
-  // TODO: Test for timeUntil
-  // TODO: Test for timeFrom & timeUntil
-  // TODO: Test for timeUntil is a String (and not a number)
-  // TODO: Test for timeUntil is a ridiculously large number (larger than the timestamp supports it)
+  def "Get the sum with an invalid timestamp"() {
+    given:
+    String processId = "testprozess"
+    String eventId = "testevent"
+    String timeFrom = "a String that should fail to parse"
+
+    when:
+    params({params->
+      params.put("timeFrom", timeFrom)
+    })
+    get("api/v1.0/processes/$processId/events/$eventId/sum")
+
+    then:
+    response.statusCode == 400
+    response.body.text.contains("Parameter 'timeFrom' must be a valid integer")
+  }
+
+  def "Get the sum with a ridiculously large timestamp, larger than the timestamp supports it"() {
+    given:
+    String processId = "testprozess"
+    String eventId = "testevent"
+    String timeUntil = "999999999999999999999999999"
+
+    when:
+    params({params->
+      params.put("timeUntil", timeUntil)
+    })
+    get("api/v1.0/processes/$processId/events/$eventId/sum")
+
+    then:
+    response.statusCode == 400
+    String expected = "Parameter 'timeUntil' must be a valid integer smaller than $Integer.MAX_VALUE".toString()
+    response.body.text.contains(expected)
+  }
 
   // TODO: Check for invalid authorization (in another test specification)
   // TODO: Check for missing authorization (in another test specification)
