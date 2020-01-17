@@ -1,4 +1,6 @@
+import ratpack.func.Action
 import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
+import ratpack.http.client.RequestSpec
 import ratpack.test.http.TestHttpClient
 import ratpack.test.ServerBackedApplicationUnderTest
 import spock.lang.Specification
@@ -13,7 +15,12 @@ class GetSumOfGivenEventSpecification extends Specification {
     DatabaseHelper.setupTestDatabase()
 
     aut = new GroovyRatpackMainApplicationUnderTest()
-    client = testHttpClient(aut)
+    client = testHttpClient(aut, new Action<RequestSpec>() {
+      @Override
+      void execute(RequestSpec requestSpec) throws Exception {
+        requestSpec.basicAuth(DatabaseHelper.TESTUSER_NAME, DatabaseHelper.TESTUSER_PASSWORD)
+      }
+    })
   }
 
 
@@ -63,8 +70,8 @@ class GetSumOfGivenEventSpecification extends Specification {
     String timeFrom = "2145916800" // 2038-01-01 00:00:00+00:00 i.e. a day far in the future
 
     when:
-    params({params->
-        params.put("timeFrom", timeFrom)
+    params({ params ->
+      params.put("timeFrom", timeFrom)
     })
     get("api/v1.0/processes/$processId/events/$eventId/sum")
 
@@ -80,7 +87,7 @@ class GetSumOfGivenEventSpecification extends Specification {
     String timeFrom = "a String that should fail to parse"
 
     when:
-    params({params->
+    params({ params ->
       params.put("timeFrom", timeFrom)
     })
     get("api/v1.0/processes/$processId/events/$eventId/sum")
@@ -97,7 +104,7 @@ class GetSumOfGivenEventSpecification extends Specification {
     String timeUntil = "999999999999999999999999999"
 
     when:
-    params({params->
+    params({ params ->
       params.put("timeUntil", timeUntil)
     })
     get("api/v1.0/processes/$processId/events/$eventId/sum")
@@ -110,6 +117,4 @@ class GetSumOfGivenEventSpecification extends Specification {
 
   // TODO: Check for invalid authorization (in another test specification)
   // TODO: Check for missing authorization (in another test specification)
-
-
 }
