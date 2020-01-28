@@ -55,7 +55,7 @@ class DatabaseHelper {
           UNIQUE KEY `id` (`id`),
           KEY `trackedEvents_index_processId` (`processId`),
           KEY `trackedEvents_index_eventsAndProcess` (`processId`,`eventId`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4;
+        );
         """
     sql.execute(createTrackedEventsStatement)
   }
