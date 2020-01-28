@@ -1,8 +1,10 @@
 # Service-Kommune Tracking Server
 
-A simple Ratpack REST Service to allow tracking of SBW events
+A Ratpack REST Service to allow tracking of Service-BW / Amt24 events in processes
 
 ## Setup for development
+1. Setup a MariaDB database (in the examples, we use `skTracker`)
+1. Create the required tables (see `DatabaseHelper.setupTables()`, located at `src/test/groovy/DatabaseHelper.groovy`)
 1. Set required environment variables:
    ```bash
    export DB_URL="jdbc:mysql://localhost:3306/skTracker";
@@ -10,7 +12,6 @@ A simple Ratpack REST Service to allow tracking of SBW events
    export DB_PASSWORD="<YOUR PASSWORD HERE>";
    export DB_DRIVER="org.mariadb.jdbc.Driver"
    ```
-   (If you use another database, change the settings above.)
 1. Run in development mode with auto-refresh:
    ```bash
    ./gradlew -t run
