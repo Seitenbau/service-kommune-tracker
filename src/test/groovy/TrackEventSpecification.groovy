@@ -1,13 +1,13 @@
-import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
 import ratpack.test.http.TestHttpClient
-import ratpack.test.ServerBackedApplicationUnderTest
-import spock.lang.Specification
 
-class TrackEventSpecification extends Specification {
+class TrackEventSpecification extends SkTrackerSpecification {
 
-  ServerBackedApplicationUnderTest aut = new GroovyRatpackMainApplicationUnderTest()
   @Delegate
-  TestHttpClient client = testHttpClient(aut)
+  TestHttpClient client
+
+  def setup() {
+    client = testHttpClient(aut)
+  }
 
   def "Adding a tracking event"() {
     given:
@@ -45,7 +45,7 @@ class TrackEventSpecification extends Specification {
     response.body.text.empty
   }
 
-  def "Missing process instance ID"(){
+  def "Missing process instance ID"() {
     given:
     String processId = "testkommune-testprozess"
     String eventId = "testevent"
@@ -58,7 +58,7 @@ class TrackEventSpecification extends Specification {
     response.body.text.contains("'processInstanceId' is required")
   }
 
-  def "Process instance ID is not a integer"(){
+  def "Process instance ID is not a integer"() {
     given:
     String processId = "testkommune-testprozess"
     String eventId = "testevent"
@@ -75,7 +75,7 @@ class TrackEventSpecification extends Specification {
     response.body.text.contains("'processInstanceId' must be an integer")
   }
 
-  def "event ID is too long"(){
+  def "event ID is too long"() {
     given:
     String processId = "testkommune-testprozess"
     String eventId = "a-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very-very" +

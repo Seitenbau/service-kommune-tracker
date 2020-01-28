@@ -3,11 +3,14 @@ import ratpack.test.http.TestHttpClient
 import ratpack.test.ServerBackedApplicationUnderTest
 import spock.lang.Specification
 
-class StartupSpecification extends Specification {
+class StartupSpecification extends SkTrackerSpecification {
 
-  ServerBackedApplicationUnderTest aut = new GroovyRatpackMainApplicationUnderTest()
   @Delegate
-  TestHttpClient client = testHttpClient(aut)
+  TestHttpClient client
+
+  def setup() {
+    client = testHttpClient(aut)
+  }
 
   def "Server is starting"() {
     when:
