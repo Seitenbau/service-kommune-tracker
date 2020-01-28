@@ -4,7 +4,7 @@ A Ratpack REST Service to allow tracking of Service-BW / Amt24 events in process
 
 ## Setup for development
 1. Setup a MariaDB database (in the examples, we use `skTracker`)
-1. Create the required tables (see `DatabaseHelper.setupTables()`, located at `src/test/groovy/DatabaseHelper.groovy`)
+1. Create the required tables (see `SkTrackerSpecification.setupTables()`, located at `src/test/groovy/SkTrackerSpecification.groovy`)
 1. Set required environment variables:
    ```bash
    export DB_URL="jdbc:mysql://localhost:3306/skTracker";

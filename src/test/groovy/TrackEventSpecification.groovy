@@ -1,19 +1,11 @@
-import groovy.sql.Sql
-import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
 import ratpack.test.http.TestHttpClient
-import ratpack.test.ServerBackedApplicationUnderTest
-import spock.lang.Specification
 
-class TrackEventSpecification extends Specification {
+class TrackEventSpecification extends SkTrackerSpecification {
 
-  ServerBackedApplicationUnderTest aut
   @Delegate
   TestHttpClient client
 
   def setup() {
-    DatabaseHelper.setupTestDatabase()
-
-    aut = new GroovyRatpackMainApplicationUnderTest()
     client = testHttpClient(aut)
   }
 

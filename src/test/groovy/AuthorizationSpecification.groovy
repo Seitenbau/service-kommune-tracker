@@ -1,19 +1,8 @@
 import ratpack.func.Action
-import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
 import ratpack.http.client.RequestSpec
-import ratpack.test.ServerBackedApplicationUnderTest
 import ratpack.test.http.TestHttpClient
-import spock.lang.Specification
 
-class AuthorizationSpecification extends Specification{
-
-  ServerBackedApplicationUnderTest aut
-
-  def setup() {
-    DatabaseHelper.setupTestDatabase()
-
-    aut = new GroovyRatpackMainApplicationUnderTest()
-  }
+class AuthorizationSpecification extends SkTrackerSpecification{
 
   def "Access without authentication fails"(){
     given:
@@ -55,7 +44,7 @@ class AuthorizationSpecification extends Specification{
     TestHttpClient client = TestHttpClient.testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(DatabaseHelper.TESTUSER_NAME, password)
+        requestSpec.basicAuth(TESTUSER_NAME, password)
       }
     })
 
@@ -73,7 +62,7 @@ class AuthorizationSpecification extends Specification{
     TestHttpClient client = TestHttpClient.testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(DatabaseHelper.TESTUSER_NAME, DatabaseHelper.TESTUSER_PASSWORD)
+        requestSpec.basicAuth(TESTUSER_NAME, TESTUSER_PASSWORD)
       }
     })
 
@@ -90,12 +79,12 @@ class AuthorizationSpecification extends Specification{
     TestHttpClient client = TestHttpClient.testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(DatabaseHelper.TESTUSER_NAME, DatabaseHelper.TESTUSER_PASSWORD)
+        requestSpec.basicAuth(TESTUSER_NAME, TESTUSER_PASSWORD)
       }
     })
 
     when:
-    client.get("/api/v1.0/testAuth/${DatabaseHelper.TESTUSER_AUTHORIZED_PROCESS_ID}")
+    client.get("/api/v1.0/testAuth/${TESTUSER_AUTHORIZED_PROCESS_ID}")
 
     then:
     client.response.statusCode == 200

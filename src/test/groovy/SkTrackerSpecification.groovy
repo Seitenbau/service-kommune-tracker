@@ -1,7 +1,10 @@
 import groovy.sql.Sql
 import org.mindrot.jbcrypt.BCrypt
+import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
+import ratpack.test.ServerBackedApplicationUnderTest
+import spock.lang.Specification
 
-class DatabaseHelper {
+class SkTrackerSpecification extends Specification {
   static final Map<String, String> dbConnectionDataForTest = [
           "DB_URL"     : "jdbc:h2:mem:skTracker;MODE=MySQL;DATABASE_TO_LOWER=TRUE",
           "DB_USERNAME": "sa",
@@ -9,14 +12,18 @@ class DatabaseHelper {
           "DB_DRIVER"  : "org.h2.Driver"
   ]
 
-  static final String TESTUSER_NAME = "testuser"
-  static final String TESTUSER_PASSWORD = "A password only used for running tests"
-  static final String TESTUSER_AUTHORIZED_PROCESS_ID = "testprozess"
+  static protected final String TESTUSER_NAME = "testuser"
+  static protected final String TESTUSER_PASSWORD = "A password only used for running tests"
+  static protected final String TESTUSER_AUTHORIZED_PROCESS_ID = "testprozess"
 
-  static setupTestDatabase() {
+  ServerBackedApplicationUnderTest aut
+
+  def setup() {
     ServerConfig.dbConnectionData = dbConnectionDataForTest
     setupTables()
     setupTestData()
+
+    aut = new GroovyRatpackMainApplicationUnderTest()
   }
 
   private static setupTables() {

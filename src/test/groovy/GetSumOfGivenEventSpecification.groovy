@@ -1,24 +1,17 @@
 import ratpack.func.Action
-import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
 import ratpack.http.client.RequestSpec
 import ratpack.test.http.TestHttpClient
-import ratpack.test.ServerBackedApplicationUnderTest
-import spock.lang.Specification
 
-class GetSumOfGivenEventSpecification extends Specification {
+class GetSumOfGivenEventSpecification extends SkTrackerSpecification {
 
-  ServerBackedApplicationUnderTest aut
   @Delegate
   TestHttpClient client
 
   def setup() {
-    DatabaseHelper.setupTestDatabase()
-
-    aut = new GroovyRatpackMainApplicationUnderTest()
     client = testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(DatabaseHelper.TESTUSER_NAME, DatabaseHelper.TESTUSER_PASSWORD)
+        requestSpec.basicAuth(TESTUSER_NAME, TESTUSER_PASSWORD)
       }
     })
   }

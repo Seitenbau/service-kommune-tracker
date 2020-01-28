@@ -3,16 +3,12 @@ import ratpack.test.http.TestHttpClient
 import ratpack.test.ServerBackedApplicationUnderTest
 import spock.lang.Specification
 
-class StartupSpecification extends Specification {
+class StartupSpecification extends SkTrackerSpecification {
 
-  ServerBackedApplicationUnderTest aut
   @Delegate
   TestHttpClient client
 
   def setup() {
-    DatabaseHelper.setupTestDatabase()
-
-    aut = new GroovyRatpackMainApplicationUnderTest()
     client = testHttpClient(aut)
   }
 
