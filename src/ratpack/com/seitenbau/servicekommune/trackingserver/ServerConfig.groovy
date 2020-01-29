@@ -1,3 +1,5 @@
+package com.seitenbau.servicekommune.trackingserver
+
 import groovy.sql.Sql
 
 class ServerConfig {
