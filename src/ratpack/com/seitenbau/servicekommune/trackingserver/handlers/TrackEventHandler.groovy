@@ -11,8 +11,8 @@ class TrackEventHandler extends AbstractTrackingServerHandler {
   protected void handle(GroovyContext ctx) {
 
     // get path parameters
-    String processId = ctx.pathTokens.processId
-    String eventId = ctx.pathTokens.eventId
+    String processId = ctx.allPathTokens.processId
+    String eventId = ctx.allPathTokens.eventId
 
     // get POST parameters
     String processInstanceId = ctx.request.queryParams.get("processInstanceId")
