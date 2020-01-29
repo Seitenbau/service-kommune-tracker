@@ -7,7 +7,7 @@ import static ratpack.jackson.Jackson.json
 class TestAuthHandler extends AbstractTrackingServerHandler {
   @Override
   protected void handle(GroovyContext ctx) {
-    String processId = ctx.pathTokens.processId
+    String processId = ctx.allPathTokens.processId
 
     // Check authorization
     if (!requireAuthorizationForProcess(processId, ctx)) {
