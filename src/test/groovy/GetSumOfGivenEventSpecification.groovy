@@ -108,6 +108,4 @@ class GetSumOfGivenEventSpecification extends SkTrackerSpecification {
     response.body.text.contains(expected)
   }
 
-  // TODO: Check for invalid authorization (in another test specification)
-  // TODO: Check for missing authorization (in another test specification)
 }
