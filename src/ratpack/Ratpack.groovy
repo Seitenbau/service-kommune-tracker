@@ -24,24 +24,29 @@ requiredDbConfigValues.each {
 
 ratpack {
   handlers {
-
-    // Start page --> Show some Info
-    get { Context ctx ->
+    get() { Context ctx ->
       ctx.response.contentType("text/html")
       render("This is the Service-Kommune Tracking API.<br><a href=\"api/v1.0\">Documentation</a>")
+    } // Start page
+
+    prefix("api/v1.0") {
+      get(new ApiDocHandler()) // API Doc page
+
+      prefix("processes/:processId") {
+
+        prefix("events/:eventId") {
+          post(new TrackEventHandler()) // Adding a new tracked event
+
+          prefix("sum") {
+            get(new SumForProcessAndEventHandler()) // Getting the sum of tracked events for a given eventId
+          }
+        }
+      }
+
+      prefix("testAuth/:processId") {
+        get("", new TestAuthHandler()) // Only works for correctly authenticated users. Useful for testing
+      }
     }
-
-    // API Doc page
-    get("api/v1.0", new ApiDocHandler())
-
-    // Adding a new tracked event
-    post("api/v1.0/processes/:processId/events/:eventId", new TrackEventHandler())
-
-    // Getting the sum of tracked events for a given eventId
-    get("api/v1.0/processes/:processId/events/:eventId/sum", new SumForProcessAndEventHandler())
-
-    // Only works for correctly authenticated users. Useful for testing
-    get("api/v1.0/testAuth/:processId", new TestAuthHandler())
   }
 }
 
