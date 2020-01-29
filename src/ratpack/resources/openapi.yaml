@@ -1,0 +1,20 @@
+openapi: 3.0.0
+info:
+  title: Service-Kommune Tracking API
+  version: 1.0-SNAPSHOT
+  description: >-
+    This document describes the Service-Kommune Tracking API.
+    A service useful for tracking various events in Service-BW processes and to generate various reports about these events.
+  contact:
+    name: Service-Kommune
+    email: "info@service-kommune.de"
+servers:
+  - url: "http://127.0.0.1:5050/api/v1.0"
+    description: "Local development environment"
+paths:
+  /:
+    get:
+      summary: "PLACEHOLDER"
+      responses:
+        '200':
+          description: "PLACEHOLDER"
