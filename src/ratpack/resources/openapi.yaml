@@ -6,15 +6,141 @@ info:
     This document describes the Service-Kommune Tracking API.
     A service useful for tracking various events in Service-BW processes and to generate various reports about these events.
   contact:
-    name: Service-Kommune
+    name: "Service-Kommune"
+    url: "https://www.service-kommune.de/"
     email: "info@service-kommune.de"
 servers:
   - url: "http://127.0.0.1:5050/api/v1.0"
     description: "Local development environment"
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+security:
+  - BasicAuth: []
 paths:
-  /:
+  "/":
     get:
-      summary: "PLACEHOLDER"
+      summary: Get Documentation
       responses:
-        '200':
-          description: "PLACEHOLDER"
+        200:
+          description: Get the documentation you are reading right now, as a HTML file with embedded Swagger UI rendering
+          content:
+            text/html:
+              example: <some HTML/>
+  "/processes/{processId}/events/{eventId}":
+    post:
+      summary: Track an event
+      security: [] # None required!
+      parameters:
+        - name: processId
+          in: path
+          required: true
+          description: >
+            Unique identifier for a process.
+            Can be chosen freely, but should be the same for the same process.
+          schema:
+            type: string
+          example: karlsruhe-mietpresrechner
+        - name: eventId
+          in: path
+          required: true
+          description: >
+            Unique identifier for a step in a model.
+            Can be chosen freely, but should be the same for the same process.
+          schema:
+            type: string
+          example: before-filling-form
+        - name: processInstanceId
+          in: query
+          required: true
+          description: >
+            Unique identifier for a concrete process instance.
+            Can be read from the process instance variable `processInstanceId`<br>
+            **WARNING:** People with access to the system database might be able to
+            get personal identifieable information from that.
+            You need to ensure that this doesn't happen, or include that fact in your privacy statement
+          schema:
+            type: integer
+          example: 15460988
+        - name: userId
+          in: query
+          required: false
+          description: >
+            Unique identifier for a user, to allow tracking accross different process instances.
+            Can be read from the process instance variable `startedBy`<br>
+            **WARNING:** People with access to the admin center will be able to get the e-mail address
+            for a given userId.
+            As you most likely cannot prevent that you should consider not providing that parameter
+            for data privacy reasons.
+          schema:
+            type: string
+          examples:
+            With a user ID:
+              value: "userId:123"
+            With a session ID:
+              value: "sessionId:456"
+      responses:
+        201:
+          description: "The event was successfully added to the database"
+        400:
+          description: "Required parameters are missing or not in correct format"
+  "/api/v1.0/processes/{processId}/events/{eventId}/sum":
+    get:
+      summary: Get sum of tracked events for given event
+      parameters:
+        - name: processId
+          in: path
+          required: true
+          description: >
+            The unique identifier for a process.
+            (As set by the `processId` parameter at the POST endpoint to track events.)
+          schema:
+            type: string
+          example: karlsruhe-mietpresrechner
+        - name: eventId
+          in: path
+          required: true
+          description: >
+            The unique identifier for an event.
+            (As set by the `eventId` parameter at the POST endpoint to track events.)
+          schema:
+            type: string
+          example: before-filling-form
+        - name: timeFrom
+          in: query
+          required: false
+          description: >
+            A UNIX timestamp marking the point in time when events are included in the result (inclusive).
+            If missing, all events are included (as long as they are not filtered by another parameter)
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 2147483647
+        - name: timeUntil
+          in: query
+          required: false
+          description: >
+            A UNIX timestamp marking the point in time when events are no longer included in the result.
+            If missing, all events are included (as long as they are not filtered by another parameter)
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 2147483647
+      responses:
+        200:
+          description: "Event found, but possibly 0 tracks"
+          content:
+            application/json:
+              schema:
+                type: integer
+                minimum: 0
+                example: 5
+        400:
+          description: "Required parameters are missing or not in correct format"
+        401:
+          description: "`Authorization` header not provided, username wrong or password wrong"
+        403:
+          description: "User is not authorized to access this `processId`"
+
