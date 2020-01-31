@@ -156,6 +156,37 @@ paths:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
           $ref: '#/components/responses/AuthorizationFailed'
+  "/api/v1.0/processes/{processId}/sum":
+    get:
+      summary: Get sum of all events for given process
+      parameters:
+        - $ref: '#/components/parameters/processId'
+        - $ref: '#/components/parameters/timeFrom'
+        - $ref: '#/components/parameters/timeUntil'
+      responses:
+        200:
+          description: All tracked events and how often that event was tracled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eventId:
+                    type: string
+                  count:
+                    type: integer
+                required:
+                  - eventId
+                  - count
+                example:
+                  before-filling-form: 521
+                  after-filling-form: 140
 
-# TODO: GET /api/v1.0/processes/{processId}/sum
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/AuthenticationFailed'
+        403:
+          $ref: '#/components/responses/AuthorizationFailed'
+
 # TODO: GET /api/v1.0/processes/{processId}
