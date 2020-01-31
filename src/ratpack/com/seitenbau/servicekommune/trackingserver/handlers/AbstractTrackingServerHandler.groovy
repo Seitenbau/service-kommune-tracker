@@ -73,4 +73,26 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
 
     return true
   }
+
+  /**
+   * Extracts a optional query parameter from the context.
+   * Sets a appropriate message in the context if the parameter is invalid (i.e. not an integer)
+   *
+   * @param ctx context object to extract from and write errors to
+   * @param paramName parameter name to extract
+   * @return the extracted integer, or null if parameter is missing
+   * @throws NumberFormatException when parameter is invalid. I.e. you should return from your handler
+   *                               when this is thrown as appropriate error messages have already been set
+   */
+  static Integer extractIntegerFromQueryParams(Context ctx, String paramName) throws NumberFormatException {
+    Integer param
+    try {
+      param = ctx.request.queryParams.get(paramName) as Integer
+      return param
+    } catch (NumberFormatException e) {
+      ctx.response.status(400)
+      ctx.render(json(["errorMsg": "Parameter '$paramName' must be a valid integer smaller than ${Integer.MAX_VALUE}".toString()]))
+      throw e
+    }
+  }
 }

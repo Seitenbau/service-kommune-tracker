@@ -16,19 +16,11 @@ class SumForProcessAndEventHandler extends AbstractTrackingServerHandler {
 
     // get GET parameters
     Integer timeFrom
-    try {
-      timeFrom = ctx.request.queryParams.timeFrom as Integer
-    } catch (NumberFormatException ignored) {
-      ctx.response.status(400)
-      ctx.render(json(["errorMsg": "Parameter 'timeFrom' must be a valid integer smaller than ${Integer.MAX_VALUE}".toString()]))
-      return
-    }
     Integer timeUntil
     try {
-      timeUntil = ctx.request.queryParams.timeUntil as Integer
+      timeFrom = extractIntegerFromQueryParams(ctx, "timeFrom")
+      timeUntil = extractIntegerFromQueryParams(ctx, "timeUntil")
     } catch (NumberFormatException ignored) {
-      ctx.response.status(400)
-      ctx.render(json(["errorMsg": "Parameter 'timeUntil' must be a valid integer smaller than ${Integer.MAX_VALUE}".toString()]))
       return
     }
 
