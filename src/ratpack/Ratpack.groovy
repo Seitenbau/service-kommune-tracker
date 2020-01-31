@@ -1,5 +1,4 @@
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
-import com.seitenbau.servicekommune.trackingserver.handlers.ApiDocHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEventHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
@@ -30,7 +29,10 @@ ratpack {
     } // Start page
 
     prefix("api/v1.0") {
-      get(new ApiDocHandler()) // API Doc page
+      get() { Context ctx ->
+        ctx.response.contentType("text/html")
+        ctx.render(ctx.file("resources/api-documentation.html").text)
+      }
 
       prefix("processes/:processId") {
 
@@ -40,6 +42,13 @@ ratpack {
           prefix("sum") {
             get(new SumForProcessAndEventHandler()) // Getting the sum of tracked events for a given eventId
           }
+        }
+      }
+
+      prefix("openapi.yaml") {
+        get() { Context ctx ->
+          ctx.response.contentType("text/yaml")
+          ctx.render(ctx.file("resources/openapi.yaml").text)
         }
       }
 
