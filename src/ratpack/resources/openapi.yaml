@@ -190,7 +190,7 @@ paths:
           $ref: '#/components/responses/AuthorizationFailed'
   "/api/v1.0/processes/{processId}":
     get:
-      summary: Get all details about tracked events for given process
+      summary: Get all details about tracked events for a given process
       parameters:
         - $ref: '#/components/parameters/processId'
         - $ref: '#/components/parameters/timeFrom'
