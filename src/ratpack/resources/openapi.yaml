@@ -10,7 +10,7 @@ info:
     url: "https://www.service-kommune.de/"
     email: "info@service-kommune.de"
 servers:
-  - url: "http://127.0.0.1:5050/api/v1.0"
+  - url: "http://127.0.0.1:5050"
     description: "Local development environment"
 components:
   securitySchemes:
@@ -34,7 +34,7 @@ components:
         Can be chosen freely, but should be the same for the same process.
       schema:
         type: string
-      example: karlsruhe-mietpresrechner
+      example: karlsruhe-mietpreisrechner
     eventId:
       name: eventId
       in: path
@@ -101,7 +101,7 @@ components:
 security:
   - BasicAuth: []
 paths:
-  "/":
+  "/api/v1.0":
     get:
       summary: Get Documentation
       responses:
@@ -110,7 +110,7 @@ paths:
           content:
             text/html:
               example: <some HTML/>
-  "/processes/{processId}/events/{eventId}":
+  "/api/v1.0/processes/{processId}/events/{eventId}":
     post:
       summary: Track an event
       security: [] # None required!
