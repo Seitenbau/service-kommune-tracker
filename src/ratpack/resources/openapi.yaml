@@ -197,7 +197,7 @@ paths:
         - $ref: '#/components/parameters/timeUntil'
       responses:
         200:
-          description: All details about all tracked events
+          description: All details about all tracked events. **Warning - that might be a big file!**
           content:
             application/json:
               schema:
@@ -207,29 +207,27 @@ paths:
                   properties:
                     timestamp:
                       type: integer
-                    processId:
-                      type: string
                     eventId:
                       type: string
                     processInstanceId:
                       type: integer
                     userId:
                       type: string
+                      nullable: true
                   required:
                     - timestamp
-                    - processId
                     - eventId
                     - processInstanceId
+                    - userId
               example:
                 - timestamp: 1576505586
-                  processId: karlsruhe-mietpresrechner
                   eventId: before-filling-form
                   processInstanceId: '15460988'
                   userId: 'userId:123'
                 - timestamp: 1576505423
-                  processId: konstanz-openair
                   eventId: before-showing-to-gemeinderat
                   processInstanceId: '12344455'
+                  userId: null
         400:
           $ref: '#/components/responses/BadRequest'
         401:

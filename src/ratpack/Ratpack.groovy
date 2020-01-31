@@ -1,4 +1,5 @@
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
+import com.seitenbau.servicekommune.trackingserver.handlers.AllDetailsHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEventHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
@@ -36,6 +37,7 @@ ratpack {
       }
 
       prefix("processes/:processId") {
+        get(new AllDetailsHandler()) // Getting all details of tracked events
 
         prefix("events/:eventId") {
           post(new TrackEventHandler()) // Adding a new tracked event
