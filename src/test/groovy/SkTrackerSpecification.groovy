@@ -75,6 +75,11 @@ class SkTrackerSpecification extends Specification {
     String insertOneTrackedEventStatement = "INSERT INTO trackedEvents (processId, eventId, processInstanceId) VALUES('testprozess', 'testevent', 123);"
     sql.execute(insertOneTrackedEventStatement)
 
+    // and two more for another event
+    String insertOtherEventStatement = "INSERT INTO trackedEvents (processId, eventId, processInstanceId) VALUES('testprozess', 'anotherTestevent', 123);"
+    sql.execute(insertOtherEventStatement)
+    sql.execute(insertOtherEventStatement)
+
     // test user with access to a specific process
     String bcryptedPw = BCrypt.hashpw(TESTUSER_PASSWORD, BCrypt.gensalt())
     String insertTestUserStatement = "INSERT INTO users (username, bcryptPassword) VALUES(?, ?)"
