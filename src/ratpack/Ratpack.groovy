@@ -1,5 +1,6 @@
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
 import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEventHandler
+import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
 import ratpack.handling.Context
@@ -42,6 +43,10 @@ ratpack {
           prefix("sum") {
             get(new SumForProcessAndEventHandler()) // Getting the sum of tracked events for a given eventId
           }
+        }
+
+        prefix("sums") {
+          get(new SumsForProcessHandler()) // Getting the sums of all tracked events for a given processId
         }
       }
 

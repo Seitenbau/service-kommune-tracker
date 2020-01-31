@@ -4,15 +4,13 @@ import com.seitenbau.servicekommune.trackingserver.ServerConfig
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import ratpack.groovy.handling.GroovyContext
-
 import static ratpack.jackson.Jackson.json
 
-class SumForProcessAndEventHandler extends AbstractTrackingServerHandler {
+class SumsForProcessHandler extends AbstractTrackingServerHandler {
   @Override
   protected void handle(GroovyContext ctx) {
     // get path parameters
     String processId = ctx.allPathTokens.processId
-    String eventId = ctx.allPathTokens.eventId
 
     // get GET parameters
     Integer timeFrom
@@ -29,13 +27,12 @@ class SumForProcessAndEventHandler extends AbstractTrackingServerHandler {
       return
     }
 
-    // get count from database
+    // get data from database
     Sql sql = ServerConfig.getNewSqlConnection()
-    String selectStatement = """SELECT COUNT(*) as amountTrackedEvent
+    String selectStatement = """SELECT eventId, COUNT(eventId) as count
               FROM trackedEvents
-              WHERE processId = ?
-                AND eventId   = ?"""
-    List filterValues = [processId, eventId]
+              WHERE processId = ?"""
+    List filterValues = [processId]
     if (timeFrom != null) {
       selectStatement += " AND timestamp >= FROM_UNIXTIME(?)"
       filterValues.add(timeFrom.toString())
@@ -44,10 +41,17 @@ class SumForProcessAndEventHandler extends AbstractTrackingServerHandler {
       selectStatement += " AND timestamp <= FROM_UNIXTIME(?)"
       filterValues.add(timeUntil.toString())
     }
-    GroovyRowResult row = sql.firstRow(selectStatement, filterValues)
+    selectStatement += "GROUP BY eventId"
+    List<GroovyRowResult> rows = sql.rows(selectStatement, filterValues)
+
+    // prepare result for user
+    Map<String, Integer> output = [:]
+    rows.each { row ->
+      output.put(row.get("eventId").toString(), Integer.parseInt(row.get("count").toString()))
+    }
 
     // return result to user
     ctx.response.status(200)
-    ctx.render(json(row.get("amountTrackedEvent")))
+    ctx.render(json(output))
   }
 }

@@ -156,9 +156,9 @@ paths:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
           $ref: '#/components/responses/AuthorizationFailed'
-  "/api/v1.0/processes/{processId}/sum":
+  "/api/v1.0/processes/{processId}/sums":
     get:
-      summary: Get sum of all events for given process
+      summary: Get sums of all events for given process
       parameters:
         - $ref: '#/components/parameters/processId'
         - $ref: '#/components/parameters/timeFrom'
