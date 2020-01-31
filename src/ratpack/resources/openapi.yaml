@@ -188,5 +188,51 @@ paths:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
           $ref: '#/components/responses/AuthorizationFailed'
-
-# TODO: GET /api/v1.0/processes/{processId}
+  "/api/v1.0/processes/{processId}":
+    get:
+      summary: Get all details about tracked events for given process
+      parameters:
+        - $ref: '#/components/parameters/processId'
+        - $ref: '#/components/parameters/timeFrom'
+        - $ref: '#/components/parameters/timeUntil'
+      responses:
+        200:
+          description: All details about all tracked events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    timestamp:
+                      type: integer
+                    processId:
+                      type: string
+                    eventId:
+                      type: string
+                    processInstanceId:
+                      type: integer
+                    userId:
+                      type: string
+                  required:
+                    - timestamp
+                    - processId
+                    - eventId
+                    - processInstanceId
+              example:
+                - timestamp: 1576505586
+                  processId: karlsruhe-mietpresrechner
+                  eventId: before-filling-form
+                  processInstanceId: '15460988'
+                  userId: 'userId:123'
+                - timestamp: 1576505423
+                  processId: konstanz-openair
+                  eventId: before-showing-to-gemeinderat
+                  processInstanceId: '12344455'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/AuthenticationFailed'
+        403:
+          $ref: '#/components/responses/AuthorizationFailed'
