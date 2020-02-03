@@ -18,8 +18,8 @@ info:
     url: "https://www.service-kommune.de/"
     email: "info@service-kommune.de"
 servers:
-  - url: "http://127.0.0.1:5050"
-    description: "Local development environment"
+  - url: "/"
+    description: "THIS server"
 components:
   securitySchemes:
     BasicAuth:
