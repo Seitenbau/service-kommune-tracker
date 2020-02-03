@@ -6,6 +6,8 @@ import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
 import ratpack.handling.Context
 
+import java.nio.file.Files
+
 import static ratpack.groovy.Groovy.ratpack
 
 // Check required database config variables
@@ -33,7 +35,14 @@ ratpack {
     prefix("api/v1.0") {
       get() { Context ctx ->
         ctx.response.contentType("text/html")
-        ctx.render(ctx.file("resources/api-documentation.html").text)
+        ctx.render(new String(Files.readAllBytes(ctx.file("resources/api-documentation.html"))))
+      }
+
+      prefix("openapi.yaml") {
+        get() { Context ctx ->
+          ctx.response.contentType("text/yaml")
+          ctx.render(new String(Files.readAllBytes(ctx.file("resources/openapi.yaml"))))
+        }
       }
 
       prefix("processes/:processId") {
@@ -49,13 +58,6 @@ ratpack {
 
         prefix("sums") {
           get(new SumsForProcessHandler()) // Getting the sums of all tracked events for a given processId
-        }
-      }
-
-      prefix("openapi.yaml") {
-        get() { Context ctx ->
-          ctx.response.contentType("text/yaml")
-          ctx.render(ctx.file("resources/openapi.yaml").text)
         }
       }
 
