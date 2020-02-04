@@ -34,3 +34,10 @@ test {
     events "passed", "skipped", "failed"
   }
 }
+
+// Output fat jar to build/libs/sk-tracker-with-dependencies.jar
+shadowJar {
+  archiveBaseName.set('sk-tracker-with-dependencies')
+  archiveClassifier.set('')
+  archiveVersion.set('')
+}
