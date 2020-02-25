@@ -6,7 +6,8 @@ Developed by [Service-Kommune](https://www.service-kommune.de), in cooperation w
 
 ## Prerequisites
 1. Setup a MariaDB database (in the examples, we name it `skTracker`)
-1. Create the required tables (see `SkTrackerSpecification.setupTables()`, located at `src/test/groovy/SkTrackerSpecification.groovy`)
+1. Create the required tables.
+   See the method `SkTrackerSpecification.setupTables()`, located in the `src/test/groovy/SkTrackerSpecification.groovy`
 1. Set required environment variables:
    ```bash
    export DB_URL="jdbc:mysql://localhost:3306/skTracker";
@@ -16,14 +17,31 @@ Developed by [Service-Kommune](https://www.service-kommune.de), in cooperation w
    ```
 
 ## Running the application
-1. Get a release jar 
-   - From the [release page](https://github.com/Seitenbau/service-kommune-tracker/releases), or
-   - By cloning and building this repository, see below
-1. Run the following command with a JRE version 1.8:
-   ```bash
-   /usr/java/jdk1.8.0_172-amd64/jre/bin/java -jar tracking-server-1.0-SNAPSHOT-all.jar
-   ```
 
+### Via Docker
+This assumes that you've already created a docker network called `sk-tracker` and there is a docker container in
+this network running MariaDb with the network-name `mariadb`.
+This also assumes this MariaDb has a database called `sktracker`, a user `sktracker` (and this user uses the password 
+`sktracker`).
+Furthermore, this database has the required tables already set-up.
+(See the method `SkTrackerSpecification.setupTables()`, located in the `src/test/groovy/SkTrackerSpecification.groovy`)
+
+1. Pull a image from DockerHub (use the `master` tag for the `master` branch):
+   ```bash
+   docker pull dweberseitenbau/service-kommune-tracker:master
+   ```
+1. Run the image (replace 12415 with the port you want to use)
+   ```bash
+   docker run -d --net=sk-tracker --name=app -p 12415:5050 \
+     --restart on-failure \
+     -e DB_URL=jdbc:mysql://mariadb:3306/sktracker \
+     -e DB_USERNAME=sktracker \
+     -e DB_PASSWORD=sktracker \
+     -e DB_DRIVER="org.mariadb.jdbc.Driver" \
+     dweberseitenbau/service-kommune-tracker:master
+   ```
+   
+   
 ## Development
 This project contains all files needed for an instant setup with the [IntelliJ IDEA](https://www.jetbrains.com/idea/) IDE.
 We suggest you simply clone the repository and import it via `File --> Open`.
@@ -42,7 +60,7 @@ Alternatively, you can use Gradle from the command line:
    ./gradlew -t run
    ```
 1. *Optional: You can also do this from within IntelliJ.*
-   *Just create a new 'Gradle' run configuration, specify the `run` task, the `-t` argument for auto-refresh and set*
+   *Just create a new 'Gradle' run configuration, specify the `run` task, the `-t` argument for auto-refresh*
    *and set the environment variables from above.*
    
 ### Building releases
