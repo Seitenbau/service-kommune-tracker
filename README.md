@@ -60,8 +60,8 @@ Alternatively, you can use Gradle from the command line:
    ./gradlew -t run
    ```
 1. *Optional: You can also do this from within IntelliJ.*
-   *Just create a new 'Gradle' run configuration, specify the `run` task, the `-t` argument for auto-refresh*
-   *and set the environment variables from above.*
+   *Just use the provided `Run with local test DB` run config. (Note that it*
+   *assumes that the database username and password are both set to `skTracker`.*
    
 ### Building releases
 1. This is super simply and happens all within gradle:
