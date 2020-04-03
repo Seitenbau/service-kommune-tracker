@@ -4,8 +4,10 @@ import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEven
 import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
+import org.flywaydb.core.Flyway
 import ratpack.handling.Context
 
+import java.lang.reflect.Field
 import java.nio.file.Files
 
 import static ratpack.groovy.Groovy.ratpack
@@ -13,17 +15,22 @@ import static ratpack.groovy.Groovy.ratpack
 // Check required database config variables
 List<String> requiredDbConfigValues = ["DB_URL", "DB_USERNAME", "DB_PASSWORD", "DB_DRIVER"]
 requiredDbConfigValues.each {
-  if (ServerConfig.dbConnectionData.get(it) == null) {
+  Field field = ServerConfig.declaredFields.find({ field -> field.name == "DB_URL" })
+  if (field.get(null) == null) {
     // variable is not configured. Maybe we have config data in environment variables?
 
     String valueFromEnvVariable = System.getenv(it)
     if (valueFromEnvVariable == null) {
       throw new RuntimeException("Required environment variable '$it' is not set.")
     } else {
-      ServerConfig.dbConnectionData.put(it, valueFromEnvVariable)
+      field.set(null, valueFromEnvVariable)
     }
   }
 }
+
+// Setup database via Firefly
+// flyway = Flyway.configure().dataSource(ServerConfig.dbConnectionData.DB_URL, databaseUsername, databasePassword).load()
+// TODO.
 
 ratpack {
   handlers {

@@ -3,13 +3,13 @@ package com.seitenbau.servicekommune.trackingserver
 import groovy.sql.Sql
 
 class ServerConfig {
-  static Map<String, String> dbConnectionData = [:]
+  public static String DB_URL
+  public static String DB_USERNAME
+  public static String DB_PASSWORD
+  public static String DB_DRIVER
 
   static Sql getNewSqlConnection() {
-    return Sql.newInstance(dbConnectionData.DB_URL,
-            dbConnectionData.DB_USERNAME,
-            dbConnectionData.DB_PASSWORD,
-            dbConnectionData.DB_DRIVER)
+    return Sql.newInstance(DB_URL, DB_USERNAME, DB_PASSWORD, DB_DRIVER)
   }
 }
 

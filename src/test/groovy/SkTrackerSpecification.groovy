@@ -6,13 +6,6 @@ import ratpack.test.ServerBackedApplicationUnderTest
 import spock.lang.Specification
 
 class SkTrackerSpecification extends Specification {
-  static final Map<String, String> dbConnectionDataForTest = [
-          "DB_URL"     : "jdbc:h2:mem:skTracker;MODE=MySQL;DATABASE_TO_LOWER=TRUE",
-          "DB_USERNAME": "sa",
-          "DB_PASSWORD": "",
-          "DB_DRIVER"  : "org.h2.Driver"
-  ]
-
   static protected final String TESTUSER_NAME = "testuser"
   static protected final String TESTUSER_PASSWORD = "A password only used for running tests"
   static protected final String TESTUSER_AUTHORIZED_PROCESS_ID = "testprozess"
@@ -20,7 +13,10 @@ class SkTrackerSpecification extends Specification {
   ServerBackedApplicationUnderTest aut
 
   def setup() {
-    ServerConfig.dbConnectionData = dbConnectionDataForTest
+    ServerConfig.DB_URL = "jdbc:h2:mem:skTracker;MODE=MySQL;DATABASE_TO_LOWER=TRUE"
+    ServerConfig.DB_USERNAME = "sa"
+    ServerConfig.DB_PASSWORD = ""
+    ServerConfig.DB_DRIVER = "org.h2.Driver"
     setupTables()
     setupTestData()
 
