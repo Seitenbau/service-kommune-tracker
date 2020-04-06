@@ -13,55 +13,14 @@ class SkTrackerSpecification extends Specification {
   ServerBackedApplicationUnderTest aut
 
   def setup() {
-    ServerConfig.DB_URL = "jdbc:h2:mem:skTracker;MODE=MySQL;DATABASE_TO_LOWER=TRUE"
+    ServerConfig.DB_URL = "jdbc:h2:mem:skTracker;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1"
     ServerConfig.DB_USERNAME = "sa"
     ServerConfig.DB_PASSWORD = ""
     ServerConfig.DB_DRIVER = "org.h2.Driver"
-    setupTables()
-    setupTestData()
-
     aut = new GroovyRatpackMainApplicationUnderTest()
-  }
 
-  private static setupTables() {
-    Sql sql = ServerConfig.getNewSqlConnection()
-
-    String createUsersStatement = """
-        DROP TABLE IF EXISTS `permissions`, `users`;
-        
-        CREATE TABLE `users` (
-          `username` VARCHAR(191) NOT NULL,
-          `creationDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          `bcryptPassword` BINARY(60) NOT NULL,
-          PRIMARY KEY (`username`),
-          UNIQUE KEY `username` (`username`)
-        );
-        
-        CREATE TABLE `permissions` (
-          `username` VARCHAR(191) NOT NULL,
-          `processId` varchar(191) NOT NULL,
-          PRIMARY KEY (`username`, `processId`),
-          CONSTRAINT `fk_username` FOREIGN KEY (`username`) REFERENCES `users`(`username`)
-        );
-        """
-    sql.execute(createUsersStatement)
-
-    String createTrackedEventsStatement = """
-        DROP TABLE IF EXISTS `trackedEvents`;
-        CREATE TABLE `trackedEvents` (
-          `id` int(11) NOT NULL AUTO_INCREMENT,
-          `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          `processId` varchar(191) NOT NULL,
-          `eventId` varchar(191) NOT NULL,
-          `processInstanceId` int(11) NOT NULL,
-          `userId` varchar(255) DEFAULT NULL,
-          PRIMARY KEY (`id`),
-          UNIQUE KEY `id` (`id`),
-          KEY `trackedEvents_index_processId` (`processId`),
-          KEY `trackedEvents_index_eventsAndProcess` (`processId`,`eventId`)
-        );
-        """
-    sql.execute(createTrackedEventsStatement)
+    //setupTestData()
+    // TODO: Setting up test data is still missing
   }
 
   private static setupTestData() {

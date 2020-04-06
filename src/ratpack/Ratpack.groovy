@@ -28,9 +28,9 @@ requiredDbConfigValues.each {
   }
 }
 
-// Setup database via Firefly
-// flyway = Flyway.configure().dataSource(ServerConfig.dbConnectionData.DB_URL, databaseUsername, databasePassword).load()
-// TODO.
+// Setup database via Flyway
+flyway = Flyway.configure().dataSource(ServerConfig.DB_URL, ServerConfig.DB_USERNAME, ServerConfig.DB_PASSWORD).load()
+flyway.migrate()
 
 ratpack {
   handlers {
