@@ -1,3 +1,5 @@
+package helpers
+
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
 import groovy.sql.Sql
 import org.mindrot.jbcrypt.BCrypt
