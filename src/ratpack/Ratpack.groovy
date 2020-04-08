@@ -4,8 +4,10 @@ import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEven
 import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
+import org.flywaydb.core.Flyway
 import ratpack.handling.Context
 
+import java.lang.reflect.Field
 import java.nio.file.Files
 
 import static ratpack.groovy.Groovy.ratpack
@@ -13,16 +15,33 @@ import static ratpack.groovy.Groovy.ratpack
 // Check required database config variables
 List<String> requiredDbConfigValues = ["DB_URL", "DB_USERNAME", "DB_PASSWORD", "DB_DRIVER"]
 requiredDbConfigValues.each {
-  if (ServerConfig.dbConnectionData.get(it) == null) {
+  Field field = ServerConfig.declaredFields.find({ field -> field.name == it })
+  if (field.get(null) == null) {
     // variable is not configured. Maybe we have config data in environment variables?
 
     String valueFromEnvVariable = System.getenv(it)
     if (valueFromEnvVariable == null) {
       throw new RuntimeException("Required environment variable '$it' is not set.")
     } else {
-      ServerConfig.dbConnectionData.put(it, valueFromEnvVariable)
+      field.set(null, valueFromEnvVariable)
     }
   }
+}
+
+// Setup database via Flyway
+flyway = Flyway.configure().dataSource(ServerConfig.DB_URL, ServerConfig.DB_USERNAME, ServerConfig.DB_PASSWORD).load()
+
+// Clean old values
+if (ServerConfig.SET_UP_TEST_DATA) {
+  flyway.clean()
+}
+
+// Setup database tables
+flyway.migrate()
+
+// Create default entries in database
+if (ServerConfig.SET_UP_TEST_DATA) {
+  ServerConfig.setupTestData()
 }
 
 ratpack {

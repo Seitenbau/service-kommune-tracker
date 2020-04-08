@@ -1,3 +1,5 @@
+import com.seitenbau.servicekommune.trackingserver.ServerConfig
+import helpers.SkTrackerSpecification
 import ratpack.func.Action
 import ratpack.http.client.RequestSpec
 import ratpack.test.http.TestHttpClient
@@ -44,7 +46,7 @@ class AuthorizationSpecification extends SkTrackerSpecification{
     TestHttpClient client = TestHttpClient.testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(TESTUSER_NAME, password)
+        requestSpec.basicAuth(ServerConfig.TESTUSER_NAME, password)
       }
     })
 
@@ -62,7 +64,7 @@ class AuthorizationSpecification extends SkTrackerSpecification{
     TestHttpClient client = TestHttpClient.testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(TESTUSER_NAME, TESTUSER_PASSWORD)
+        requestSpec.basicAuth(ServerConfig.TESTUSER_NAME, ServerConfig.TESTUSER_PASSWORD)
       }
     })
 
@@ -79,12 +81,12 @@ class AuthorizationSpecification extends SkTrackerSpecification{
     TestHttpClient client = TestHttpClient.testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(TESTUSER_NAME, TESTUSER_PASSWORD)
+        requestSpec.basicAuth(ServerConfig.TESTUSER_NAME, ServerConfig.TESTUSER_PASSWORD)
       }
     })
 
     when:
-    client.get("/api/v1.0/testAuth/${TESTUSER_AUTHORIZED_PROCESS_ID}")
+    client.get("/api/v1.0/testAuth/${ServerConfig.TESTUSER_AUTHORIZED_PROCESS_ID}")
 
     then:
     client.response.statusCode == 200

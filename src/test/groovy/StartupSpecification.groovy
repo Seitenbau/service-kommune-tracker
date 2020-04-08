@@ -1,7 +1,5 @@
-import ratpack.groovy.test.GroovyRatpackMainApplicationUnderTest
+import helpers.SkTrackerSpecification
 import ratpack.test.http.TestHttpClient
-import ratpack.test.ServerBackedApplicationUnderTest
-import spock.lang.Specification
 
 class StartupSpecification extends SkTrackerSpecification {
 
