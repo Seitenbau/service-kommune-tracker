@@ -63,3 +63,9 @@ Alternatively, you can use Gradle from the command line:
    ```bash
    ./gradlew clean test shadowJar
    ```
+
+# Licence & Contributing
+This project, including all files in this repository, is licenced under the terms of the [MIT Licence](./LICENSE).
+Forking is welcome and contributions are encouraged. The preferred way is via a 
+[GitHub Pull Request](https://github.com/Seitenbau/service-kommune-tracker/pulls) or by starting a discussion via a 
+[Github Issue](https://github.com/Seitenbau/service-kommune-tracker/issues)
