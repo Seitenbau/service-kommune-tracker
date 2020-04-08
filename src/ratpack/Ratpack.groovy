@@ -15,7 +15,7 @@ import static ratpack.groovy.Groovy.ratpack
 // Check required database config variables
 List<String> requiredDbConfigValues = ["DB_URL", "DB_USERNAME", "DB_PASSWORD", "DB_DRIVER"]
 requiredDbConfigValues.each {
-  Field field = ServerConfig.declaredFields.find({ field -> field.name == "DB_URL" })
+  Field field = ServerConfig.declaredFields.find({ field -> field.name == it })
   if (field.get(null) == null) {
     // variable is not configured. Maybe we have config data in environment variables?
 
@@ -30,7 +30,19 @@ requiredDbConfigValues.each {
 
 // Setup database via Flyway
 flyway = Flyway.configure().dataSource(ServerConfig.DB_URL, ServerConfig.DB_USERNAME, ServerConfig.DB_PASSWORD).load()
+
+// Clean old values
+if (ServerConfig.SET_UP_TEST_DATA) {
+  flyway.clean()
+}
+
+// Setup database tables
 flyway.migrate()
+
+// Create default entries in database
+if (ServerConfig.SET_UP_TEST_DATA) {
+  ServerConfig.setupTestData()
+}
 
 ratpack {
   handlers {

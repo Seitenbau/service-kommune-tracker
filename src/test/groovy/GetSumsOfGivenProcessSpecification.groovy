@@ -1,3 +1,4 @@
+import com.seitenbau.servicekommune.trackingserver.ServerConfig
 import groovy.json.JsonSlurper
 import helpers.SkTrackerSpecification
 import ratpack.func.Action
@@ -12,7 +13,7 @@ class GetSumsOfGivenProcessSpecification extends SkTrackerSpecification {
     client = testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(TESTUSER_NAME, TESTUSER_PASSWORD)
+        requestSpec.basicAuth(ServerConfig.TESTUSER_NAME, ServerConfig.TESTUSER_PASSWORD)
       }
     })
   }
