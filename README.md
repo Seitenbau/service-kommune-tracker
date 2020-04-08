@@ -6,8 +6,6 @@ Developed by [Service-Kommune](https://www.service-kommune.de), in cooperation w
 
 ## Prerequisites
 1. Setup a MariaDB database (in the examples, we name it `skTracker`)
-1. Create the required tables.
-   See the method `SkTrackerSpecification.setupTables()`, located in the `src/test/groovy/SkTrackerSpecification.groovy`
 1. Set required environment variables:
    ```bash
    export DB_URL="jdbc:mysql://localhost:3306/skTracker";
@@ -23,8 +21,6 @@ This assumes that you've already created a docker network called `sk-tracker` an
 this network running MariaDb with the network-name `mariadb`.
 This also assumes this MariaDb has a database called `sktracker`, a user `sktracker` (and this user uses the password 
 `sktracker`).
-Furthermore, this database has the required tables already set-up.
-(See the method `SkTrackerSpecification.setupTables()`, located in the `src/test/groovy/SkTrackerSpecification.groovy`)
 
 1. Pull a image from DockerHub (use the `master` tag for the `master` branch):
    ```bash
@@ -40,8 +36,7 @@ Furthermore, this database has the required tables already set-up.
      -e DB_DRIVER="org.mariadb.jdbc.Driver" \
      dweberseitenbau/service-kommune-tracker:master
    ```
-   
-   
+
 ## Development
 This project contains all files needed for an instant setup with the [IntelliJ IDEA](https://www.jetbrains.com/idea/) IDE.
 We suggest you simply clone the repository and import it via `File --> Open`.
