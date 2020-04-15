@@ -6,6 +6,7 @@ import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
 import org.flywaydb.core.Flyway
 import ratpack.handling.Context
+import ratpack.http.MutableHeaders
 
 import java.lang.reflect.Field
 import java.nio.file.Files
@@ -46,6 +47,15 @@ if (ServerConfig.SET_UP_TEST_DATA) {
 
 ratpack {
   handlers {
+    all {
+      // Set CORS headers for all requests
+      MutableHeaders headers = response.headers
+      headers.set("Access-Control-Allow-Origin", "*")
+      headers.set("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE")
+      headers.set("Access-Control-Allow-Headers", "Authorization")
+      next()
+    }
+
     get() { Context ctx ->
       ctx.response.contentType("text/html")
       render("This is the Service-Kommune Tracking API.<br><a href=\"api/v1.0\">Documentation</a>")
