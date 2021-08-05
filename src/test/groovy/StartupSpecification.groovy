@@ -16,6 +16,6 @@ class StartupSpecification extends SkTrackerSpecification {
 
     then:
     response.statusCode == 200
-    response.body.text.contains('This is the Service-Kommune Tracking API.')
+    response.body.text.contains('This is the Serviceportal Tracking Server.')
   }
 }
