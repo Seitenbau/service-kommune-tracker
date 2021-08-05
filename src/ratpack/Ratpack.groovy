@@ -58,7 +58,7 @@ ratpack {
 
     get() { Context ctx ->
       ctx.response.contentType("text/html")
-      render("This is the Service-Kommune Tracking API.<br><a href=\"api/v1.0\">Documentation</a>")
+      render("This is the Serviceportal Tracking Server.<br><a href=\"api/v1.0\">API Documentation</a>")
     } // Start page
 
     prefix("api/v1.0") {
@@ -97,4 +97,4 @@ ratpack {
   }
 }
 
-println("Service-Kommune Tracking Server is up and running! ✅")
+println("Serviceportal Tracking Server is up and running! ✅")

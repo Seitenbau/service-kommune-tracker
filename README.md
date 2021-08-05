@@ -1,8 +1,8 @@
-# Service-Kommune Tracking Server
+# Serviceportal Tracking Server
 
-A [Ratpack](https://ratpack.io) REST Service to allow tracking of events in Service-BW / Amt24 processes.
+A service to allow tracking of process events in the "Serviceportal" [Service-BW](https://www.service-bw.de/), [Amt24](https://amt24.sachsen.de/) and OZG-Hub.
 
-Developed by [Service-Kommune](https://www.service-kommune.de), in cooperation with [#ANDI](https://www.netzwerk-agile-verwaltung.de/).
+Developed by [SEITENBAU](https://www.seitenbau.com/was-wir-koennen/public-service-design), in cooperation with [#ANDI](https://www.netzwerk-agile-verwaltung.de/).
 
 ## Prerequisites
 1. Setup a MariaDB database (in the examples, we name it `skTracker`)
@@ -17,12 +17,12 @@ Developed by [Service-Kommune](https://www.service-kommune.de), in cooperation w
 ## Running the application
 
 ### Via Docker
-This assumes that you've already created a docker network called `sk-tracker` and there is a docker container in
-this network running MariaDb with the network-name `mariadb`.
-This also assumes this MariaDb has a database called `sktracker`, a user `sktracker` (and this user uses the password 
+This assumes that you've already created a docker network called `sk-tracker` and there is a docker
+container in this network running MariaDb with the network-name `mariadb`. This also assumes this
+MariaDb has a database called `sktracker`, a user `sktracker` (and this user uses the password 
 `sktracker`).
 
-1. Pull a image from DockerHub (use the `master` tag for the `master` branch):
+1. Pull an image from DockerHub (use the `master` tag for the `master` branch):
    ```bash
    docker pull dweberseitenbau/service-kommune-tracker:master
    ```
