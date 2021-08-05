@@ -4,10 +4,12 @@ version '1.0-SNAPSHOT'
 buildscript {
   repositories {
     jcenter()
+    gradlePluginPortal()
   }
   dependencies {
     classpath "io.ratpack:ratpack-gradle:1.7.5"
     classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0' // creating fat jars with all dependencies
+    classpath "com.github.ben-manes:gradle-versions-plugin:0.39.0" // Check for dependencies, adds task "dependencyUpdates"
   }
 }
 
@@ -15,6 +17,7 @@ apply plugin: "io.ratpack.ratpack-groovy"
 apply plugin: "idea"
 apply plugin: 'groovy'
 apply plugin: 'com.github.johnrengelman.shadow' // creating fat jars with all dependencies
+apply plugin: "com.github.ben-manes.versions"
 
 repositories {
   jcenter()
