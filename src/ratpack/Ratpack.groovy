@@ -1,5 +1,6 @@
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
 import com.seitenbau.servicekommune.trackingserver.handlers.AllDetailsHandler
+import com.seitenbau.servicekommune.trackingserver.handlers.ExceptionHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEventHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
@@ -12,6 +13,7 @@ import java.lang.reflect.Field
 import java.nio.file.Files
 
 import static ratpack.groovy.Groovy.ratpack
+import static ratpack.jackson.Jackson.json
 
 // Check required database config variables
 List<String> requiredDbConfigValues = ["DB_URL", "DB_USERNAME", "DB_PASSWORD", "DB_DRIVER"]
@@ -46,6 +48,10 @@ if (ServerConfig.SET_UP_TEST_DATA) {
 }
 
 ratpack {
+  bindings {
+    bind(ExceptionHandler) // custom exception handler
+  }
+
   handlers {
     all {
       // Set CORS headers for all requests
@@ -81,17 +87,27 @@ ratpack {
           post(new TrackEventHandler()) // Adding a new tracked event
 
           prefix("sum") {
-            get(new SumForProcessAndEventHandler()) // Getting the sum of tracked events for a given eventId
+            get(new SumForProcessAndEventHandler())
+            // Getting the sum of tracked events for a given eventId
           }
         }
 
         prefix("sums") {
-          get(new SumsForProcessHandler()) // Getting the sums of all tracked events for a given processId
+          get(new SumsForProcessHandler())
+          // Getting the sums of all tracked events for a given processId
         }
       }
 
       prefix("testAuth/:processId") {
-        get("", new TestAuthHandler()) // Only works for correctly authenticated users. Useful for testing
+        get("", new TestAuthHandler())
+        // Only works for correctly authenticated users. Useful for testing
+      }
+
+      prefix("admin") {
+        get("addUser") { Context ctx ->
+          // ctx.response.status(200)
+          render(json("todo: actually create the user."))
+        }
       }
     }
   }

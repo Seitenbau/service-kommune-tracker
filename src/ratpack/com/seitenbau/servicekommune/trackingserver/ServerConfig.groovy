@@ -14,6 +14,8 @@ class ServerConfig {
   public static final String TESTUSER_NAME = "testuser"
   public static final String TESTUSER_PASSWORD = "A password only used for running tests"
   public static final String TESTUSER_AUTHORIZED_PROCESS_ID = "testprozess"
+  public static final String TESTADMIN_NAME = "admin"
+  public static final String TESTADMIN_PASSWORD = "A admin password for local tests"
 
   static Sql getNewSqlConnection() {
     return Sql.newInstance(DB_URL, DB_USERNAME, DB_PASSWORD, DB_DRIVER)
@@ -37,6 +39,9 @@ class ServerConfig {
     sql.executeInsert(insertTestUserStatement, [TESTUSER_NAME, bcryptedPw])
     String insertPermissionStatement = "INSERT INTO permissions (username, processId) VALUES(?, ?)"
     sql.executeInsert(insertPermissionStatement, [TESTUSER_NAME, TESTUSER_AUTHORIZED_PROCESS_ID])
+
+    // test admin users
+    // TODO Add test admin
   }
 }
 
