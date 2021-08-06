@@ -1,6 +1,7 @@
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
 import com.seitenbau.servicekommune.trackingserver.handlers.AllDetailsHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.ExceptionHandler
+import com.seitenbau.servicekommune.trackingserver.handlers.RequireAdminHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEventHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
@@ -104,9 +105,11 @@ ratpack {
       }
 
       prefix("admin") {
-        get("addUser") { Context ctx ->
-          // ctx.response.status(200)
-          render(json("todo: actually create the user."))
+        all(new RequireAdminHandler())
+
+        get("users") {
+          render("TODO: List of users")
+          // TODO: Return list of all users
         }
       }
     }

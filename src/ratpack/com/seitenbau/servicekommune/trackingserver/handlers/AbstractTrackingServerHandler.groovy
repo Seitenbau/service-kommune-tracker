@@ -1,7 +1,7 @@
 package com.seitenbau.servicekommune.trackingserver.handlers
 
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
-import com.seitenbau.servicekommune.trackingserver.exceptions.BadRequestException
+import com.seitenbau.servicekommune.trackingserver.exceptions.HttpClientError
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.mindrot.jbcrypt.BCrypt
@@ -44,7 +44,7 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
     // Check if header was supplied
     String header = ctx.request.headers.get("Authorization")
     if (header == null) {
-      throw new BadRequestException("Required header 'Authorization' is missing", 401)
+      throw new HttpClientError("Required header 'Authorization' is missing", 401)
     }
 
     // Get username and password from header
@@ -56,7 +56,7 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
 
       return new Tuple(username, password)
     } catch (Exception ignored) {
-      throw new BadRequestException("Authorization header not in correct format. (Basic only)", 400)
+      throw new HttpClientError("Authorization header not in correct format. (Basic only)", 400)
     }
   }
 
@@ -73,16 +73,13 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
     String getPasswordStatement = "SELECT bcryptPassword FROM users WHERE username = ?"
     GroovyRowResult result = sql.firstRow(getPasswordStatement, [username])
     if (result == null) {
-      ctx.response.status(401)
-      ctx.render(json(["errorMsg": "Authentication failed. User not found."]))
-      return
+      throw new HttpClientError("Authentication failed. User not found.", 401)
     }
     String storedPassword = new String(result.get("bcryptPassword") as byte[])
     if (BCrypt.checkpw(password, storedPassword)) {
       // PW okay!
     } else {
-      ctx.response.status(401)
-      ctx.render(json(["errorMsg": "Authentication failed. Wrong password."]))
+      throw new HttpClientError("Authentication failed. Wrong password.", 401)
     }
   }
 
