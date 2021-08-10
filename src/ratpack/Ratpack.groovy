@@ -6,6 +6,7 @@ import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEven
 import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
+import com.seitenbau.servicekommune.trackingserver.handlers.UsersHandler
 import org.flywaydb.core.Flyway
 import ratpack.handling.Context
 import ratpack.http.MutableHeaders
@@ -107,9 +108,8 @@ ratpack {
       prefix("admin") {
         all(new RequireAdminHandler())
 
-        get("users") {
-          render("TODO: List of users")
-          // TODO: Return list of all users
+        prefix("users") {
+          all(new UsersHandler())
         }
       }
     }
