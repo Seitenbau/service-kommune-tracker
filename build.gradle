@@ -46,6 +46,7 @@ test {
   testLogging {
     events "passed", "skipped", "failed"
   }
+  useJUnitPlatform()
 }
 
 // Output fat jar to build/libs/sk-tracker-with-dependencies.jar

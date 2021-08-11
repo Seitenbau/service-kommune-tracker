@@ -9,19 +9,10 @@ import ratpack.jackson.Jackson
 
 import java.time.LocalDateTime
 
-class UsersHandler extends AbstractTrackingServerHandler {
+class GetUsersHandler extends AbstractTrackingServerHandler {
   @Override
   protected void handle(GroovyContext ctx) {
-    HttpMethod method = ctx.request.method
-    String path = ctx.request.path
-
-    if (method == HttpMethod.GET && path.endsWith("/users")) {
-      ctx.render(Jackson.json(getUsersFromDb()))
-      // TODO: Add this endpoint to the documentation
-    } else {
-      ctx.notFound()
-    }
-
+    ctx.render(Jackson.json(getUsersFromDb()))
   }
 
   private static List<User> getUsersFromDb() {

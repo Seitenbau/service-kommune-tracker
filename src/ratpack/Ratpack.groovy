@@ -6,7 +6,7 @@ import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEven
 import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
-import com.seitenbau.servicekommune.trackingserver.handlers.UsersHandler
+import com.seitenbau.servicekommune.trackingserver.handlers.GetUsersHandler
 import org.flywaydb.core.Flyway
 import ratpack.handling.Context
 import ratpack.http.MutableHeaders
@@ -15,7 +15,6 @@ import java.lang.reflect.Field
 import java.nio.file.Files
 
 import static ratpack.groovy.Groovy.ratpack
-import static ratpack.jackson.Jackson.json
 
 // Check required database config variables
 List<String> requiredDbConfigValues = ["DB_URL", "DB_USERNAME", "DB_PASSWORD", "DB_DRIVER"]
@@ -109,7 +108,7 @@ ratpack {
         all(new RequireAdminHandler())
 
         prefix("users") {
-          all(new UsersHandler())
+          get(new GetUsersHandler())
         }
       }
     }
