@@ -16,6 +16,14 @@ class AddUserHandler extends AbstractTrackingServerHandler {
     String passwordCleartext = context.request.queryParams.get("passwordCleartext")
     String isAdmin = context.request.queryParams.get("isAdmin") ?: false
 
+    if (username == null || username.size() == 0) {
+      throw new HttpClientError("Username must not be empty.", 400)
+    }
+
+    if (passwordCleartext == null || passwordCleartext.size() == 0) {
+      throw new HttpClientError("Password must not be empty.", 400)
+    }
+
     if (isAdmin == "true" || isAdmin == "false") {
       // everything ok
     } else {
@@ -37,7 +45,9 @@ class AddUserHandler extends AbstractTrackingServerHandler {
 
   static void createUser(String username, String passwordCleartext, boolean isAdmin) {
     assert username != null
+    assert username.size() != 0
     assert passwordCleartext != null
+    assert passwordCleartext.size() != 0
 
     if (username.length() > 191) {
       throw new UsernameTooLongException()
