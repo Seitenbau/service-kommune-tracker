@@ -1,5 +1,6 @@
 package com.seitenbau.servicekommune.trackingserver
 
+import com.seitenbau.servicekommune.trackingserver.handlers.users.AddUserHandler
 import groovy.sql.Sql
 import org.mindrot.jbcrypt.BCrypt
 
@@ -25,23 +26,21 @@ class ServerConfig {
     Sql sql = getNewSqlConnection()
 
     // one already tracked event
-    String insertOneTrackedEventStatement = "INSERT INTO trackedEvents (processId, eventId, processInstanceId) VALUES('testprozess', 'testevent', 123);"
+    String insertOneTrackedEventStatement = "INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`) VALUES('testprozess', 'testevent', 123);"
     sql.execute(insertOneTrackedEventStatement)
 
     // and two more for another event
-    String insertOtherEventStatement = "INSERT INTO trackedEvents (processId, eventId, processInstanceId) VALUES('testprozess', 'anotherTestevent', 123);"
+    String insertOtherEventStatement = "INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`) VALUES('testprozess', 'anotherTestevent', 123);"
     sql.execute(insertOtherEventStatement)
     sql.execute(insertOtherEventStatement)
 
     // test user with access to a specific process
-    String bcryptedPw = BCrypt.hashpw(TESTUSER_PASSWORD, BCrypt.gensalt())
-    String insertTestUserStatement = "INSERT INTO users (username, bcryptPassword) VALUES(?, ?)"
-    sql.executeInsert(insertTestUserStatement, [TESTUSER_NAME, bcryptedPw])
-    String insertPermissionStatement = "INSERT INTO permissions (username, processId) VALUES(?, ?)"
+    AddUserHandler.createUser(TESTUSER_NAME, TESTUSER_PASSWORD, false)
+    String insertPermissionStatement = "INSERT INTO permissions (`username`, `processId`) VALUES(?, ?)"
     sql.executeInsert(insertPermissionStatement, [TESTUSER_NAME, TESTUSER_AUTHORIZED_PROCESS_ID])
 
     // test admin users
-    // TODO Add test admin
+    AddUserHandler.createUser(TESTADMIN_NAME, TESTADMIN_PASSWORD, true)
   }
 }
 

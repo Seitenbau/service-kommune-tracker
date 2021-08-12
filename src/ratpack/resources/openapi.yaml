@@ -110,12 +110,12 @@ components:
         minimum: 0
         maximum: 2147483647
 security:
-  - BasicAuth: []
+  - BasicAuth: [ ]
 paths:
   "/api/v1.0":
     get:
       summary: Get Documentation
-      security: []
+      security: [ ]
       responses:
         200:
           description: Get the documentation you are reading right now, as a HTML file with embedded Swagger UI rendering
@@ -125,7 +125,7 @@ paths:
   "/api/v1.0/processes/{processId}/events/{eventId}":
     post:
       summary: Track an event
-      security: [] # None required!
+      security: [ ] # None required!
       tags:
         - Tracking events
       parameters:
@@ -262,7 +262,7 @@ paths:
                   properties:
                     username:
                       type: string
-                    creatingDate:
+                    creationDate:
                       type: string
                       description: "A unix timestamp when the users account was created"
                     isAdmin:
@@ -272,4 +272,43 @@ paths:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
           $ref: '#/components/responses/NotAdmin'
+    post:
+      summary: Add a new user
+      tags:
+        - Administration
+      parameters:
+        - name: username
+          in: query
+          required: true
+          description: The login identifier of the new user
+          schema:
+            type: string
+          example: maxmustermann.musterstadt
+        - name: passwordCleartext
+          in: query
+          required: true
+          description: >
+            The password the user will use to authenticate (in cleartext, the server will
+            bcrypt the password before storing in the the database)
+          schema:
+            type: string
+        - name: isAdmin
+          in: query
+          required: false
+          description: Flag if the user should get admin privileges or not
+          schema:
+            type: string
+          default: false
+      responses:
+        201:
+          description: User sucessfully created
+        400:
+          description: User cannot be created because the supplied data was not understood.
+        409:
+          description: User cannot be created as they already exist.
+        401:
+          $ref: '#/components/responses/AuthenticationFailed'
+        403:
+          $ref: '#/components/responses/NotAdmin'
+
 

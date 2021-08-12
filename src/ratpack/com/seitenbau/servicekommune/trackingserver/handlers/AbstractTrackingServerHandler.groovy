@@ -28,7 +28,7 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
 
     // Check permissions
     Sql sql = ServerConfig.getNewSqlConnection()
-    String getPermissionsStatement = "SELECT 1 FROM permissions WHERE username = ? AND processId = ?"
+    String getPermissionsStatement = "SELECT 1 FROM permissions WHERE `username` = ? AND `processId` = ?"
     int resultSize = sql.rows(getPermissionsStatement, [username, processId]).size()
     if (resultSize == 0) {
       // No results --> No fitting permission!
@@ -70,7 +70,7 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
   static void verifyUser(Context ctx, String username, String password) {
     // Check if the password matches the user
     Sql sql = ServerConfig.getNewSqlConnection()
-    String getPasswordStatement = "SELECT bcryptPassword FROM users WHERE username = ?"
+    String getPasswordStatement = "SELECT `bcryptPassword` FROM users WHERE username = ?"
     GroovyRowResult result = sql.firstRow(getPasswordStatement, [username])
     if (result == null) {
       throw new HttpClientError("Authentication failed. User not found.", 401)

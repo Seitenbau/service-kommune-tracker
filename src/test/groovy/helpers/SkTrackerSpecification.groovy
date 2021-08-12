@@ -12,7 +12,7 @@ class SkTrackerSpecification extends Specification {
   ServerBackedApplicationUnderTest aut
 
   def setup() {
-    ServerConfig.DB_URL = "jdbc:h2:mem:skTracker;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1"
+    ServerConfig.DB_URL = "jdbc:h2:mem:skTracker;MODE=MySQL;DATABASE_TO_UPPER=FALSE;DATABASE_TO_LOWER=FALSE;;DB_CLOSE_DELAY=-1"
     ServerConfig.DB_USERNAME = "sa"
     ServerConfig.DB_PASSWORD = ""
     ServerConfig.DB_DRIVER = "org.h2.Driver"

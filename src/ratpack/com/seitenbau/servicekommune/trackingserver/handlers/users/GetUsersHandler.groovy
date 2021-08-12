@@ -1,10 +1,10 @@
-package com.seitenbau.servicekommune.trackingserver.handlers
+package com.seitenbau.servicekommune.trackingserver.handlers.users
 
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
+import com.seitenbau.servicekommune.trackingserver.handlers.AbstractTrackingServerHandler
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import ratpack.groovy.handling.GroovyContext
-import ratpack.http.HttpMethod
 import ratpack.jackson.Jackson
 
 import java.time.LocalDateTime
@@ -27,6 +27,8 @@ class GetUsersHandler extends AbstractTrackingServerHandler {
     return result
   }
 }
+
+// TODO: Also return current permissions & creationDate in relative time units
 
 class User {
   String username

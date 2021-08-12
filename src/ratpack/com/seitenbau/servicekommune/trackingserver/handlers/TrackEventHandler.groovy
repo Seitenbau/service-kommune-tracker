@@ -18,6 +18,7 @@ class TrackEventHandler extends AbstractTrackingServerHandler {
     String processInstanceId = ctx.request.queryParams.get("processInstanceId")
     String userId = ctx.request.queryParams.get("userId")
 
+    // TODO: Refactor those into HttpClientError
     // verify parameters
     if (processInstanceId == null) {
       ctx.response.status(400)
@@ -49,7 +50,7 @@ class TrackEventHandler extends AbstractTrackingServerHandler {
 
     // Store result in database
     Sql sql = ServerConfig.getNewSqlConnection()
-    sql.execute("INSERT INTO trackedEvents (processId, eventId, processInstanceId, userId) VALUES (?, ?, ?, ?)",
+    sql.execute("INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`, `userId`) VALUES (?, ?, ?, ?)",
             [processId, eventId, processInstanceId, userId])
     sql.commit()
 

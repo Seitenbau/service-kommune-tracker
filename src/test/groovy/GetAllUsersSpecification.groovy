@@ -1,11 +1,9 @@
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
-import groovy.json.JsonParser
 import groovy.json.JsonSlurper
 import helpers.SkTrackerSpecification
 import ratpack.func.Action
 import ratpack.http.client.RequestSpec
 import ratpack.test.http.TestHttpClient
-import spock.lang.Ignore
 
 class GetAllUsersSpecification extends SkTrackerSpecification {
 
@@ -16,32 +14,33 @@ class GetAllUsersSpecification extends SkTrackerSpecification {
     client = testHttpClient(aut, new Action<RequestSpec>() {
       @Override
       void execute(RequestSpec requestSpec) throws Exception {
-        requestSpec.basicAuth(ServerConfig.TESTUSER_NAME, ServerConfig.TESTUSER_PASSWORD)
+        requestSpec.basicAuth(ServerConfig.TESTADMIN_NAME, ServerConfig.TESTADMIN_PASSWORD)
       }
     })
   }
 
-  @Ignore // This test requires a admin user that is not yet part of the test environment
   def "Get all users"() {
     when:
     get("api/v1.0/admin/users")
-    def result = new JsonSlurper().parseText(response.body.text)
+    Set<Object> result = new JsonSlurper().parseText(response.body.text) as Set<Object>
 
     then:
     response.statusCode == 200
-    // TODO: Verify tests users are there.
-  }
 
-  def "Get all users as non-admin"() {
-    when:
-    get("api/v1.0/admin/users")
-    def result = new JsonSlurper().parseText(response.body.text)
+    long now = System.currentTimeMillis()
+    long tenSecondsAgo = System.currentTimeMillis() - (10 * 1000)
 
-    then:
-    response.statusCode == 403
+    def admin = result.find { it.username == ServerConfig.TESTADMIN_NAME }
+    admin != null
+    admin.isAdmin == true
+    admin.creationDate <= now
+    admin.creationDate > tenSecondsAgo
 
-    result."errorType" == "Client error"
-    result."errorMessage".matches("Authorization failed\\. User .* is not an admin.")
+    def user = result.find { it.username == ServerConfig.TESTUSER_NAME }
+    user != null
+    user.isAdmin == false
+    user.creationDate <= now
+    user.creationDate > tenSecondsAgo
   }
 
 }
