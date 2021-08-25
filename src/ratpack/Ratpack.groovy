@@ -116,6 +116,7 @@ ratpack {
               post(new AddUserHandler())
             }
           }
+          // TODO: Add methods to edit users and their permissions
         }
       }
     }

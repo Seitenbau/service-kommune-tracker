@@ -1,6 +1,7 @@
 package com.seitenbau.servicekommune.trackingserver.handlers
 
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
+import com.seitenbau.servicekommune.trackingserver.exceptions.HttpClientError
 import groovy.sql.Sql
 import ratpack.groovy.handling.GroovyContext
 
@@ -18,33 +19,22 @@ class TrackEventHandler extends AbstractTrackingServerHandler {
     String processInstanceId = ctx.request.queryParams.get("processInstanceId")
     String userId = ctx.request.queryParams.get("userId")
 
-    // TODO: Refactor those into HttpClientError
     // verify parameters
     if (processInstanceId == null) {
-      ctx.response.status(400)
-      ctx.render(json(["errorMsg": "Parameter 'processInstanceId' is required"]))
-      return
+      throw new HttpClientError("Parameter 'processInstanceId' is required", 400)
     }
     if (!(processInstanceId.isInteger())) {
-      ctx.response.status(400)
-      ctx.render(json(["errorMsg": "Parameter 'processInstanceId' must be an integer"]))
-      return
+      throw new HttpClientError("Parameter 'processInstanceId' must be an integer", 400)
     }
     if (processId.length() > 190) {
-      ctx.response.status(400)
-      ctx.render(json(["errorMessage": "Parameter 'processId' must be shorter than 190 characters"]))
-      return
+      throw new HttpClientError("Parameter 'processId' must be shorter than 190 characters", 400)
     }
     if (eventId.length() > 190) {
-      ctx.response.status(400)
-      ctx.render(json(["errorMessage": "Parameter 'eventId' must be shorter than 190 characters"]))
-      return
+      throw new HttpClientError("Parameter 'eventId' must be shorter than 190 characters", 400)
     }
     if (userId != null) {
       if (userId.length() > 190) {
-        ctx.response.status(400)
-        ctx.render(json(["errorMessage": "Parameter 'userId' must be shorter than 190 characters"]))
-        return
+        throw new HttpClientError("Parameter 'userId' must be shorter than 190 characters", 400)
       }
     }
 
