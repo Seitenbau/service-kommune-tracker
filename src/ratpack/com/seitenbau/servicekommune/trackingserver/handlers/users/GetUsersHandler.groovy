@@ -26,15 +26,19 @@ class GetUsersHandler extends AbstractTrackingServerHandler {
     List<GroovyRowResult> rows = sql.rows(selectStatement)
 
     List result = []
-    rows.unique { it.username }.each {
-      // TODO: Also return current permissions
-      PrettyTime prettyTime = new PrettyTime()
+    rows.collect().unique { it.username }.each { dbUser ->
+      // The call to "collect()" deep-copies the list (as the later call to (unique()) removes duplicates in-place
+
+      List<String> permissions = rows.findAll { it.username == dbUser.username }.collect { it.processId }
+      permissions.removeAll { it == null } // Remove "null" objects
+
       def user = [
-              "username"            : it.username,
-              "creationDate"        : it.creationDate,
-              "creationDateHuman"   : (it.creationDate as Timestamp).toString(),
-              "creationDateRelative": prettyTime.format(it.creationDate as Timestamp),
-              "isAdmin"             : it.isAdmin
+              "username"            : dbUser.username,
+              "creationDate"        : dbUser.creationDate,
+              "creationDateHuman"   : (dbUser.creationDate as Timestamp).toString(),
+              "creationDateRelative": new PrettyTime().format(dbUser.creationDate as Timestamp),
+              "isAdmin"             : dbUser.isAdmin,
+              "permissions"         : permissions
       ]
       result.add(user)
     }

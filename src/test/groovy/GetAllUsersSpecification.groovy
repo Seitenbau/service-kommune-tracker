@@ -35,12 +35,16 @@ class GetAllUsersSpecification extends SkTrackerSpecification {
     admin.isAdmin == true
     admin.creationDate <= now
     admin.creationDate > tenSecondsAgo
+    admin.creationDateRelative == "moments ago"
+    (admin.permissions as List).isEmpty()
 
     def user = result.find { it.username == ServerConfig.TESTUSER_NAME }
     user != null
     user.isAdmin == false
     user.creationDate <= now
     user.creationDate > tenSecondsAgo
+    user.creationDateRelative == "moments ago"
+    (user.permissions as List).contains(ServerConfig.TESTUSER_AUTHORIZED_PROCESS_ID)
   }
 
 }
