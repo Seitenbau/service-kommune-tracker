@@ -265,9 +265,21 @@ paths:
                     creationDate:
                       type: string
                       description: "A unix timestamp when the users account was created"
+                    creationDateHuman:
+                      type: string
+                      description: "A human readable timestamp"
+                      example: "2021-08-06 13:42:55.0"
+                    creationDateRelative:
+                      type: string
+                      description: "A human readable, relative time"
+                      example: "3 weeks ago"
                     isAdmin:
                       type: boolean
                       description: "A boolean flag showing if that user has admin rights"
+                    permissions:
+                      type: array
+                      items:
+                        $ref: '#/components/parameters/processId'
         401:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
