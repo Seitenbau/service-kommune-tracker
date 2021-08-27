@@ -312,8 +312,8 @@ paths:
           required: false
           description: Flag if the user should get admin privileges or not
           schema:
-            type: string
-          default: false
+            type: boolean
+            default: false
       responses:
         201:
           description: User sucessfully created
@@ -346,6 +346,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/AuthenticationFailed'
+        403:
+          $ref: '#/components/responses/NotAdmin'
+        404:
+          description: User with supplied username does not exist
+    patch:
+      summary: Change details about a specific user
+      tags:
+        - Administration
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: >
+            Unique identifier for a user
+          schema:
+            type: string
+          example: john.doe
+        - name: newPassword
+          in: query
+          required: false
+          description: The new password the user will use to authenticate (in cleartext, the server will
+            bcrypt the password before storing in the the database)
+          schema:
+            type: string
+      responses:
+        200:
+          description: Changes were sucessfull. Response contains log of changes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Success"
+                  changes:
+                    type: array
+                    items:
+                      type: string
+                      description: "A log of the change."
+                      example: "Password was updated."
         401:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
