@@ -7,6 +7,7 @@ import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandle
 import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.users.AddUserHandler
+import com.seitenbau.servicekommune.trackingserver.handlers.users.GetUserHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.users.GetUsersHandler
 import org.flywaydb.core.Flyway
 import ratpack.handling.Context
@@ -116,7 +117,15 @@ ratpack {
               post(new AddUserHandler())
             }
           }
-          // TODO: Add methods to edit users and their permissions
+
+          prefix(":username") {
+            path {
+              byMethod {
+                get(new GetUserHandler())
+                // TODO: Add methods to edit users and their permissions
+              }
+            }
+          }
         }
       }
     }

@@ -109,6 +109,30 @@ components:
         type: integer
         minimum: 0
         maximum: 2147483647
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        creationDate:
+          type: string
+          description: "A unix timestamp when the users account was created"
+        creationDateHuman:
+          type: string
+          description: "A human readable timestamp"
+          example: "2021-08-06 13:42:55.0"
+        creationDateRelative:
+          type: string
+          description: "A human readable, relative time"
+          example: "3 weeks ago"
+        isAdmin:
+          type: boolean
+          description: "A boolean flag showing if that user has admin rights"
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/parameters/processId'
 security:
   - BasicAuth: [ ]
 paths:
@@ -258,28 +282,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    username:
-                      type: string
-                    creationDate:
-                      type: string
-                      description: "A unix timestamp when the users account was created"
-                    creationDateHuman:
-                      type: string
-                      description: "A human readable timestamp"
-                      example: "2021-08-06 13:42:55.0"
-                    creationDateRelative:
-                      type: string
-                      description: "A human readable, relative time"
-                      example: "3 weeks ago"
-                    isAdmin:
-                      type: boolean
-                      description: "A boolean flag showing if that user has admin rights"
-                    permissions:
-                      type: array
-                      items:
-                        $ref: '#/components/parameters/processId'
+                  $ref: '#/components/schemas/User'
         401:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
@@ -322,5 +325,30 @@ paths:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
           $ref: '#/components/responses/NotAdmin'
-
-
+  "/api/v1.0/admin/users/{username}":
+    get:
+      summary: Get details about a specific user
+      tags:
+        - Administration
+      parameters:
+        - name: username
+          in: path
+          required: true
+          description: >
+            Unique identifier for a user
+          schema:
+            type: string
+          example: john.doe
+      responses:
+        200:
+          description: Details about this user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/AuthenticationFailed'
+        403:
+          $ref: '#/components/responses/NotAdmin'
+        404:
+          description: User with supplied username does not exist
