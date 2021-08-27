@@ -372,6 +372,12 @@ paths:
             bcrypt the password before storing in the the database)
           schema:
             type: string
+        - name: isAdmin
+          in: query
+          required: false
+          description: Flag if the user should get admin privileges or if they should be removed.
+          schema:
+            type: boolean
       responses:
         200:
           description: Changes were sucessfull. Response contains log of changes.

@@ -28,12 +28,24 @@ class EditUserHandler extends AbstractTrackingServerHandler {
     if (newPasswordCleartext != null && newPasswordCleartext.isEmpty()) throw new HttpClientError("New password must not be empty.", 400)
     if (newPasswordCleartext) {
       String passwordBcrypted = BCrypt.hashpw(newPasswordCleartext, BCrypt.gensalt())
-      int affectedRows = sql.executeUpdate("UPDATE users SET bcryptPassword = ? WHERE username = ?", [passwordBcrypted, username])
+      int affectedRows = sql.executeUpdate("UPDATE `users` SET `bcryptPassword` = ? WHERE username = ?", [passwordBcrypted, username])
       assert affectedRows == 1
       changeLog.add("Password was updated.")
     }
 
-    // TODO: Updating admin status
+    // Updating admin status
+    String isAdmin = context.request.queryParams.get("isAdmin")
+    if (isAdmin != null) {
+      if (isAdmin == "true" || isAdmin == "false") {
+        // valid values
+        boolean newValue = isAdmin.toBoolean()
+        int affectedRows = sql.executeUpdate("UPDATE `users` SET `isAdmin` = ? WHERE username = ?", [newValue, username])
+        assert affectedRows == 1
+        changeLog.add("Admin status was set to ${newValue}.".toString())
+      } else {
+        throw new HttpClientError("Parameter 'isAdmin' has invalid value '$isAdmin'", 400)
+      }
+    }
 
     // TODO: Removing permission
 

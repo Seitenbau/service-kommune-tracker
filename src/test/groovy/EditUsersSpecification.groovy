@@ -39,4 +39,38 @@ class EditUsersSpecification extends SkTrackerSpecification {
     (result.changes as List<String>).contains("Password was updated.")
   }
 
+  def "Grant admin rights to user"() {
+    when:
+    params({ params ->
+      params.put("isAdmin", true)
+    })
+    patch("api/v1.0/admin/users/${ServerConfig.TESTUSER_NAME}")
+    def result = new JsonSlurper().parseText(response.body.text)
+
+    then:
+    response.statusCode == 200
+
+    result != null
+    result.status == "Success"
+    result.changes instanceof List<String>
+    (result.changes as List<String>) == ["Admin status was set to true."]
+  }
+
+  def "Remove admin rights to user"() {
+    when:
+    params({ params ->
+      params.put("isAdmin", false)
+    })
+    patch("api/v1.0/admin/users/${ServerConfig.TESTADMIN_NAME}")
+    def result = new JsonSlurper().parseText(response.body.text)
+
+    then:
+    response.statusCode == 200
+
+    result != null
+    result.status == "Success"
+    result.changes instanceof List<String>
+    (result.changes as List<String>) == ["Admin status was set to false."]
+  }
+
 }
