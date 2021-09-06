@@ -27,9 +27,7 @@ class EditUserHandler extends AbstractTrackingServerHandler {
     String newPasswordCleartext = context.request.queryParams.get("newPassword")
     if (newPasswordCleartext != null && newPasswordCleartext.isEmpty()) throw new HttpClientError("New password must not be empty.", 400)
     if (newPasswordCleartext) {
-      String passwordBcrypted = BCrypt.hashpw(newPasswordCleartext, BCrypt.gensalt())
-      int affectedRows = sql.executeUpdate("UPDATE `users` SET `bcryptPassword` = ? WHERE username = ?", [passwordBcrypted, username])
-      assert affectedRows == 1
+      updatePassword(newPasswordCleartext, username)
       changeLog.add("Password was updated.")
     }
 
@@ -57,4 +55,17 @@ class EditUserHandler extends AbstractTrackingServerHandler {
     context.response.status(200)
     context.render(Jackson.json([status: "Success", changes: changeLog]))
   }
+
+  private static void updatePassword(String newPasswordCleartext, String username) {
+    assert newPasswordCleartext != null
+    assert !newPasswordCleartext.isEmpty()
+
+    Sql sql = ServerConfig.getNewSqlConnection()
+
+    String passwordBcrypted = BCrypt.hashpw(newPasswordCleartext, BCrypt.gensalt())
+    int affectedRows = sql.executeUpdate("UPDATE `users` SET `bcryptPassword` = ? WHERE username = ?", [passwordBcrypted, username])
+    assert affectedRows == 1
+  }
 }
+
+
