@@ -33,15 +33,15 @@ class SumForProcessAndEventHandler extends AbstractTrackingServerHandler {
     Sql sql = ServerConfig.getNewSqlConnection()
     String selectStatement = """SELECT COUNT(*) as amountTrackedEvent
               FROM trackedEvents
-              WHERE processId = ?
-                AND eventId   = ?"""
+              WHERE `processId` = ?
+                AND `eventId`   = ?"""
     List filterValues = [processId, eventId]
     if (timeFrom != null) {
-      selectStatement += " AND timestamp >= FROM_UNIXTIME(?)"
+      selectStatement += " AND `timestamp` >= FROM_UNIXTIME(?)"
       filterValues.add(timeFrom.toString())
     }
     if (timeUntil != null) {
-      selectStatement += " AND timestamp <= FROM_UNIXTIME(?)"
+      selectStatement += " AND `timestamp` <= FROM_UNIXTIME(?)"
       filterValues.add(timeUntil.toString())
     }
     GroovyRowResult row = sql.firstRow(selectStatement, filterValues)

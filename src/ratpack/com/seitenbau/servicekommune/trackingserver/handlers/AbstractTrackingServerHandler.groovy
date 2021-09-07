@@ -1,6 +1,7 @@
 package com.seitenbau.servicekommune.trackingserver.handlers
 
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
+import com.seitenbau.servicekommune.trackingserver.exceptions.HttpClientError
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.mindrot.jbcrypt.BCrypt
@@ -22,47 +23,12 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
    * @return true if authentication and authorization are okay!
    */
   static boolean requireAuthorizationForProcess(String processId, Context ctx) {
-    // Check if header was supplied
-    String header = ctx.request.headers.get("Authorization")
-    if (header == null) {
-      ctx.response.status(401)
-      ctx.render(json(["errorMsg": "Required header 'Authorization' is missing"]))
-      return false
-    }
-
-    // Get username and password from header
-    String username
-    String password
-    try {
-      String encodedPart = header.split(" ")[1]
-      String[] decoded = new String(encodedPart.decodeBase64()).split(":")
-      username = decoded[0]
-      password = decoded[1] // watch out! cleartext password
-    } catch (Exception ignored) {
-      ctx.response.status(400)
-      ctx.render(json(["errorMsg": "Authorization header not in correct format. (Basic only)"]))
-      return false
-    }
-    // Check if the password matches the user
-    Sql sql = ServerConfig.getNewSqlConnection()
-    String getPasswordStatement = "SELECT bcryptPassword FROM users WHERE username = ?"
-    GroovyRowResult result = sql.firstRow(getPasswordStatement, [username])
-    if (result == null) {
-      ctx.response.status(401)
-      ctx.render(json(["errorMsg": "Authentication failed. User not found."]))
-      return false
-    }
-    String storedPassword = new String(result.get("bcryptPassword") as byte[])
-    if (BCrypt.checkpw(password, storedPassword)) {
-      // PW okay!
-    } else {
-      ctx.response.status(401)
-      ctx.render(json(["errorMsg": "Authentication failed. Wrong password."]))
-      return false
-    }
+    def (String username, String password) = getUsernameAndPasswordFromHeaders(ctx)
+    verifyUser(ctx, username, password)
 
     // Check permissions
-    String getPermissionsStatement = "SELECT 1 FROM permissions WHERE username = ? AND processId = ?"
+    Sql sql = ServerConfig.getNewSqlConnection()
+    String getPermissionsStatement = "SELECT 1 FROM permissions WHERE `username` = ? AND `processId` = ?"
     int resultSize = sql.rows(getPermissionsStatement, [username, processId]).size()
     if (resultSize == 0) {
       // No results --> No fitting permission!
@@ -72,6 +38,49 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
     }
 
     return true
+  }
+
+  static Tuple<String> getUsernameAndPasswordFromHeaders(Context ctx) {
+    // Check if header was supplied
+    String header = ctx.request.headers.get("Authorization")
+    if (header == null) {
+      throw new HttpClientError("Required header 'Authorization' is missing", 401)
+    }
+
+    // Get username and password from header
+    try {
+      String encodedPart = header.split(" ")[1]
+      String[] decoded = new String(encodedPart.decodeBase64()).split(":")
+      String username = decoded[0]
+      String password = decoded[1] // watch out! cleartext password
+
+      return new Tuple(username, password)
+    } catch (Exception ignored) {
+      throw new HttpClientError("Authorization header not in correct format. (Basic only)", 400)
+    }
+  }
+
+  /**
+   * Verifies the provided username and password are valid. Throws 401 exceptions if not.
+   *
+   * @param ctx
+   * @param username
+   * @param password
+   */
+  static void verifyUser(Context ctx, String username, String password) {
+    // Check if the password matches the user
+    Sql sql = ServerConfig.getNewSqlConnection()
+    String getPasswordStatement = "SELECT `bcryptPassword` FROM users WHERE username = ?"
+    GroovyRowResult result = sql.firstRow(getPasswordStatement, [username])
+    if (result == null) {
+      throw new HttpClientError("Authentication failed. User not found.", 401)
+    }
+    String storedPassword = new String(result.get("bcryptPassword") as byte[])
+    if (BCrypt.checkpw(password, storedPassword)) {
+      // PW okay!
+    } else {
+      throw new HttpClientError("Authentication failed. Wrong password.", 401)
+    }
   }
 
   /**

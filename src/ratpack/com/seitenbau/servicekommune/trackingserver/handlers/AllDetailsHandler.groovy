@@ -32,16 +32,16 @@ class AllDetailsHandler extends AbstractTrackingServerHandler {
 
     // get data from database
     Sql sql = ServerConfig.getNewSqlConnection()
-    String selectStatement = """SELECT `timestamp`, eventId, processInstanceId, userId
+    String selectStatement = """SELECT `timestamp`, `eventId`, `processInstanceId`, `userId`
               FROM trackedEvents
-              WHERE processId = ?"""
+              WHERE `processId` = ?"""
     List filterValues = [processId]
     if (timeFrom != null) {
-      selectStatement += " AND timestamp >= FROM_UNIXTIME(?)"
+      selectStatement += " AND `timestamp` >= FROM_UNIXTIME(?)"
       filterValues.add(timeFrom.toString())
     }
     if (timeUntil != null) {
-      selectStatement += " AND timestamp <= FROM_UNIXTIME(?)"
+      selectStatement += " AND `timestamp` <= FROM_UNIXTIME(?)"
       filterValues.add(timeUntil.toString())
     }
     List<GroovyRowResult> rows = sql.rows(selectStatement, filterValues)

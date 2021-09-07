@@ -34,6 +34,9 @@ dependencies {
   // password hashing
   implementation 'org.mindrot:jbcrypt:0.4'
 
+  // relative time
+  implementation group: 'org.ocpsoft.prettytime', name: 'prettytime', version: '5.0.1.Final'
+
   // testing
   testImplementation 'org.spockframework:spock-core:2.0-groovy-2.5'
 
@@ -46,6 +49,7 @@ test {
   testLogging {
     events "passed", "skipped", "failed"
   }
+  useJUnitPlatform()
 }
 
 // Output fat jar to build/libs/sk-tracker-with-dependencies.jar
