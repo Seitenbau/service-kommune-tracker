@@ -82,7 +82,7 @@ class EditUserHandler extends AbstractTrackingServerHandler {
     assert affectedRows == 1
   }
 
-  private static void addPermission(String username, String permissionToAdd) {
+  static void addPermission(String username, String permissionToAdd) {
     assert permissionToAdd != null
     assert !permissionToAdd.isEmpty()
     assert username != null

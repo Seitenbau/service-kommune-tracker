@@ -1,6 +1,7 @@
 package com.seitenbau.servicekommune.trackingserver
 
 import com.seitenbau.servicekommune.trackingserver.handlers.users.AddUserHandler
+import com.seitenbau.servicekommune.trackingserver.handlers.users.EditUserHandler
 import groovy.sql.Sql
 import org.mindrot.jbcrypt.BCrypt
 
@@ -36,8 +37,7 @@ class ServerConfig {
 
     // test user with access to a specific process
     AddUserHandler.createUser(TESTUSER_NAME, TESTUSER_PASSWORD, false)
-    String insertPermissionStatement = "INSERT INTO permissions (`username`, `processId`) VALUES(?, ?)"
-    sql.executeInsert(insertPermissionStatement, [TESTUSER_NAME, TESTUSER_AUTHORIZED_PROCESS_ID])
+    EditUserHandler.addPermission(TESTUSER_NAME, TESTUSER_AUTHORIZED_PROCESS_ID)
 
     // test admin users
     AddUserHandler.createUser(TESTADMIN_NAME, TESTADMIN_PASSWORD, true)
