@@ -45,9 +45,22 @@ class EditUserHandler extends AbstractTrackingServerHandler {
       }
     }
 
-    // TODO: Removing permission
+    // Adding permission
+    String permissionToAdd = context.request.queryParams.get("addPermission")
+    if (permissionToAdd != null) {
+      if (permissionToAdd.isEmpty() || permissionToAdd.isAllWhitespace()) {
+        throw new HttpClientError("addPermission must not be empty", 400)
+      }
 
-    // TODO: Adding permission
+      try {
+        addPermission(username, permissionToAdd)
+        changeLog.add("Added permission for process '$permissionToAdd'.".toString())
+      } catch (PermissionAlreadyExistsException ignored) {
+        changeLog.add("Permission for process '$permissionToAdd' was already given.".toString())
+      }
+    }
+
+    // TODO: Removing permission
 
     sql.commit()
     sql.close()
@@ -59,6 +72,8 @@ class EditUserHandler extends AbstractTrackingServerHandler {
   private static void updatePassword(String newPasswordCleartext, String username) {
     assert newPasswordCleartext != null
     assert !newPasswordCleartext.isEmpty()
+    assert username != null
+    assert !username.isEmpty()
 
     Sql sql = ServerConfig.getNewSqlConnection()
 
@@ -66,6 +81,33 @@ class EditUserHandler extends AbstractTrackingServerHandler {
     int affectedRows = sql.executeUpdate("UPDATE `users` SET `bcryptPassword` = ? WHERE username = ?", [passwordBcrypted, username])
     assert affectedRows == 1
   }
+
+  private static void addPermission(String username, String permissionToAdd) {
+    assert permissionToAdd != null
+    assert !permissionToAdd.isEmpty()
+    assert username != null
+    assert !username.isEmpty()
+
+    Sql sql = ServerConfig.getNewSqlConnection()
+
+    boolean permissionAlreadyPresent
+    sql.withTransaction {
+      GroovyRowResult row = sql.firstRow("SELECT `username` FROM `permissions` WHERE `username` = ? AND `processId` = ?", [username, permissionToAdd])
+      permissionAlreadyPresent = (row != null)
+
+      if (!permissionAlreadyPresent) {
+        sql.executeInsert("INSERT INTO `permissions` (`username`, `processId`) VALUES (?, ?)", [username, permissionToAdd])
+      }
+    }
+    sql.commit()
+    if (permissionAlreadyPresent) {
+      // Sadly, this cant be done in the "withTransaction" Closure directly, as it confuses the rollback.
+      throw new PermissionAlreadyExistsException()
+    }
+  }
+
+  static class PermissionAlreadyExistsException extends Exception {}
+
 }
 
 

@@ -378,6 +378,13 @@ paths:
           description: Flag if the user should get admin privileges or if they should be removed.
           schema:
             type: boolean
+        - name: addPermission
+          in: query
+          required: false
+          description: The name of a process that user shall be granted access to.
+          schema:
+            type: string
+            example: "karlsruhe-mietpreisrechner"
       responses:
         200:
           description: Changes were sucessfull. Response contains log of changes.

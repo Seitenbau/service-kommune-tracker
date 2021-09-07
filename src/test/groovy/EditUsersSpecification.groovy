@@ -73,4 +73,44 @@ class EditUsersSpecification extends SkTrackerSpecification {
     (result.changes as List<String>) == ["Admin status was set to false."]
   }
 
+  def "Add permissions to view a process to a user"() {
+    given:
+    String nameOfANewProcess = "teststadt-testprozessNummerZwei"
+
+    when:
+    params({ params ->
+      params.put("addPermission", nameOfANewProcess)
+    })
+    patch("api/v1.0/admin/users/${ServerConfig.TESTUSER_NAME}")
+    def result = new JsonSlurper().parseText(response.body.text)
+
+    then:
+    response.statusCode == 200
+
+    result != null
+    result.status == "Success"
+    result.changes instanceof List<String>
+    (result.changes as List<String>) == ["Added permission for process '$nameOfANewProcess'.".toString()]
+  }
+
+  def "Add permissions to view a process to a user that already has access to this process"() {
+    given:
+    String nameOfAnExistingProcess = ServerConfig.TESTUSER_AUTHORIZED_PROCESS_ID
+
+    when:
+    params({ params ->
+      params.put("addPermission", nameOfAnExistingProcess)
+    })
+    patch("api/v1.0/admin/users/${ServerConfig.TESTUSER_NAME}")
+    def result = new JsonSlurper().parseText(response.body.text)
+
+    then:
+    response.statusCode == 200
+
+    result != null
+    result.status == "Success"
+    result.changes instanceof List<String>
+    (result.changes as List<String>) == ["Permission for process '$nameOfAnExistingProcess' was already given.".toString()]
+  }
+
 }
