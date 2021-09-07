@@ -45,7 +45,7 @@ class EditUserHandler extends AbstractTrackingServerHandler {
       }
     }
 
-    // Adding permission
+    // Adding a permission
     String permissionToAdd = context.request.queryParams.get("addPermission")
     if (permissionToAdd != null) {
       if (permissionToAdd.isEmpty() || permissionToAdd.isAllWhitespace()) {
@@ -60,7 +60,21 @@ class EditUserHandler extends AbstractTrackingServerHandler {
       }
     }
 
-    // TODO: Removing permission
+    // Removing a permission
+    String permissionToRemove = context.request.queryParams.get("removePermission")
+    if (permissionToRemove != null) {
+      if (permissionToRemove.isEmpty() || permissionToRemove.isAllWhitespace()) {
+        throw new HttpClientError("permissionToRemove must not be empty", 400)
+      }
+
+      boolean wasRemoved = removePermission(username, permissionToRemove)
+      if (wasRemoved) {
+        changeLog.add("Permission for process '$permissionToRemove' was removed.".toString())
+      } else {
+        changeLog.add(("Permission for process '$permissionToRemove' was not given in the first " +
+                "place and therefore doesn't need to be removed.").toString())
+      }
+    }
 
     sql.commit()
     sql.close()
@@ -104,6 +118,29 @@ class EditUserHandler extends AbstractTrackingServerHandler {
       // Sadly, this cant be done in the "withTransaction" Closure directly, as it confuses the rollback.
       throw new PermissionAlreadyExistsException()
     }
+  }
+
+  /**
+   * Removes a permission from a user
+   *
+   * @param username
+   * @param permissionToRemove
+   * @return true, if the permission was removed. false, if it was never there in the first place.
+   */
+  static boolean removePermission(String username, String permissionToRemove) {
+    assert permissionToRemove != null
+    assert !permissionToRemove.isEmpty()
+    assert username != null
+    assert !username.isEmpty()
+
+    Sql sql = ServerConfig.getNewSqlConnection()
+
+    sql.execute("DELETE FROM `permissions` WHERE `username` = ? AND `processId` = ?", [username, permissionToRemove])
+
+    assert sql.updateCount == 0 || sql.updateCount == 1
+
+    return sql.updateCount != 0
+    // true, if the permission was removed. false, if it was never there in the first place.
   }
 
   static class PermissionAlreadyExistsException extends Exception {}

@@ -385,6 +385,13 @@ paths:
           schema:
             type: string
             example: "karlsruhe-mietpreisrechner"
+        - name: removePermission
+          in: query
+          required: false
+          description: The name of a process that user currently has access to, that should be removed
+          schema:
+            type: string
+            example: "karlsruhe-mietpreisrechner"
       responses:
         200:
           description: Changes were sucessfull. Response contains log of changes.

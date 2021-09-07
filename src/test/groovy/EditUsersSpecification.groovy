@@ -113,4 +113,44 @@ class EditUsersSpecification extends SkTrackerSpecification {
     (result.changes as List<String>) == ["Permission for process '$nameOfAnExistingProcess' was already given.".toString()]
   }
 
+  def "Remove permissions to view a process from a user"() {
+    given:
+    String nameOfAPermissionThisUserHasAccessTo = ServerConfig.TESTUSER_AUTHORIZED_PROCESS_ID
+
+    when:
+    params({ params ->
+      params.put("removePermission", nameOfAPermissionThisUserHasAccessTo)
+    })
+    patch("api/v1.0/admin/users/${ServerConfig.TESTUSER_NAME}")
+    def result = new JsonSlurper().parseText(response.body.text)
+
+    then:
+    response.statusCode == 200
+
+    result != null
+    result.status == "Success"
+    result.changes instanceof List<String>
+    (result.changes as List<String>) == ["Permission for process '$nameOfAPermissionThisUserHasAccessTo' was removed.".toString()]
+  }
+
+  def "Remove permissions to view a process from a user that does not have this permission"() {
+    given:
+    String nameOfAnNonExistingProcess = "thisProcessDoesNotExist"
+
+    when:
+    params({ params ->
+      params.put("removePermission", nameOfAnNonExistingProcess)
+    })
+    patch("api/v1.0/admin/users/${ServerConfig.TESTUSER_NAME}")
+    def result = new JsonSlurper().parseText(response.body.text)
+
+    then:
+    response.statusCode == 200
+
+    result != null
+    result.status == "Success"
+    result.changes instanceof List<String>
+    (result.changes as List<String>) == ["Permission for process '$nameOfAnNonExistingProcess' was not given in the first place and therefore doesn't need to be removed.".toString()]
+  }
+
 }
