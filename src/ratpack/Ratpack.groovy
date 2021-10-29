@@ -85,6 +85,7 @@ ratpack {
         }
       }
 
+      // TODO: Separate /processes and /processes/:processId
       prefix("processes/:processId") {
         get(new AllDetailsHandler()) // Getting all details of tracked events
 

@@ -269,6 +269,40 @@ paths:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
           $ref: '#/components/responses/AuthorizationFailed'
+  "/api/v1.0/processes":
+    get:
+      summary: Get list of all processes
+      tags:
+        - Administration
+      responses:
+        200:
+          description: A list of all processes ids and some high-level details about them
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    processId:
+                      type: string
+                      description: Unique identifier for a process.
+                    usersWithAccess:
+                      type: array
+                      items:
+                        type: string
+                    numberOfTrackedEvents:
+                      type: number
+                    firstTrackedEventHuman:
+                      type: string
+                      description: A human-readable relative timestamp of the first tracked event
+                    lastTrackedEventHuman:
+                      type: string
+                      description: A human-readable relative timestamp of the latest tracked event
+        401:
+          $ref: '#/components/responses/AuthenticationFailed'
+        403:
+          $ref: '#/components/responses/NotAdmin'
   "/api/v1.0/admin/users":
     get:
       summary: Get list of all users
