@@ -85,22 +85,24 @@ ratpack {
         }
       }
 
-      // TODO: Separate /processes and /processes/:processId
-      prefix("processes/:processId") {
-        get(new AllDetailsHandler()) // Getting all details of tracked events
+      prefix("processes") {
 
-        prefix("events/:eventId") {
-          post(new TrackEventHandler()) // Adding a new tracked event
+        prefix(":processId") {
+          get(new AllDetailsHandler()) // Getting all details of tracked events
 
-          prefix("sum") {
-            get(new SumForProcessAndEventHandler())
-            // Getting the sum of tracked events for a given eventId
+          prefix("events/:eventId") {
+            post(new TrackEventHandler()) // Adding a new tracked event
+
+            prefix("sum") {
+              get(new SumForProcessAndEventHandler())
+              // Getting the sum of tracked events for a given eventId
+            }
           }
-        }
 
-        prefix("sums") {
-          get(new SumsForProcessHandler())
-          // Getting the sums of all tracked events for a given processId
+          prefix("sums") {
+            get(new SumsForProcessHandler())
+            // Getting the sums of all tracked events for a given processId
+          }
         }
       }
 
