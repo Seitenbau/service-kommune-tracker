@@ -293,10 +293,10 @@ paths:
                         type: string
                     numberOfTrackedEvents:
                       type: number
-                    firstTrackedEventHuman:
+                    firstTrackedEventRelative:
                       type: string
                       description: A human-readable relative timestamp of the first tracked event
-                    lastTrackedEventHuman:
+                    lastTrackedEventRelative:
                       type: string
                       description: A human-readable relative timestamp of the latest tracked event
         401:
