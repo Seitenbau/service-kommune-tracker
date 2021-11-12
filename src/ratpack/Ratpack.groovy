@@ -1,11 +1,5 @@
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
-import com.seitenbau.servicekommune.trackingserver.handlers.AllDetailsHandler
-import com.seitenbau.servicekommune.trackingserver.handlers.ExceptionHandler
-import com.seitenbau.servicekommune.trackingserver.handlers.RequireAdminHandler
-import com.seitenbau.servicekommune.trackingserver.handlers.SumForProcessAndEventHandler
-import com.seitenbau.servicekommune.trackingserver.handlers.SumsForProcessHandler
-import com.seitenbau.servicekommune.trackingserver.handlers.TestAuthHandler
-import com.seitenbau.servicekommune.trackingserver.handlers.TrackEventHandler
+import com.seitenbau.servicekommune.trackingserver.handlers.*
 import com.seitenbau.servicekommune.trackingserver.handlers.users.AddUserHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.users.EditUserHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.users.GetUserHandler
@@ -17,7 +11,6 @@ import ratpack.http.MutableHeaders
 import java.lang.reflect.Field
 import java.nio.file.Files
 
-import static ratpack.groovy.Groovy.byMethod
 import static ratpack.groovy.Groovy.ratpack
 
 // Check required database config variables
@@ -85,21 +78,28 @@ ratpack {
         }
       }
 
-      prefix("processes/:processId") {
-        get(new AllDetailsHandler()) // Getting all details of tracked events
-
-        prefix("events/:eventId") {
-          post(new TrackEventHandler()) // Adding a new tracked event
-
-          prefix("sum") {
-            get(new SumForProcessAndEventHandler())
-            // Getting the sum of tracked events for a given eventId
-          }
+      prefix("processes") {
+        prefix("") {
+          all(new RequireAdminHandler())
+          get(new AllProcessesHandler())
         }
 
-        prefix("sums") {
-          get(new SumsForProcessHandler())
-          // Getting the sums of all tracked events for a given processId
+        prefix(":processId") {
+          get(new AllDetailsHandler()) // Getting all details of tracked events
+
+          prefix("events/:eventId") {
+            post(new TrackEventHandler()) // Adding a new tracked event
+
+            prefix("sum") {
+              get(new SumForProcessAndEventHandler())
+              // Getting the sum of tracked events for a given eventId
+            }
+          }
+
+          prefix("sums") {
+            get(new SumsForProcessHandler())
+            // Getting the sums of all tracked events for a given processId
+          }
         }
       }
 

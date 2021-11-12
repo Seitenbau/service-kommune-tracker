@@ -3,7 +3,6 @@ package com.seitenbau.servicekommune.trackingserver
 import com.seitenbau.servicekommune.trackingserver.handlers.users.AddUserHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.users.EditUserHandler
 import groovy.sql.Sql
-import org.mindrot.jbcrypt.BCrypt
 
 class ServerConfig {
   public static String DB_URL
@@ -27,11 +26,11 @@ class ServerConfig {
     Sql sql = getNewSqlConnection()
 
     // one already tracked event
-    String insertOneTrackedEventStatement = "INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`) VALUES('testprozess', 'testevent', 123);"
+    String insertOneTrackedEventStatement = "INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`) VALUES('$TESTUSER_AUTHORIZED_PROCESS_ID', 'testevent', 123);"
     sql.execute(insertOneTrackedEventStatement)
 
     // and two more for another event
-    String insertOtherEventStatement = "INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`) VALUES('testprozess', 'anotherTestevent', 123);"
+    String insertOtherEventStatement = "INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`) VALUES('$TESTUSER_AUTHORIZED_PROCESS_ID', 'anotherTestevent', 123);"
     sql.execute(insertOtherEventStatement)
     sql.execute(insertOtherEventStatement)
 
