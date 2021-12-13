@@ -5,11 +5,16 @@ import com.seitenbau.servicekommune.trackingserver.exceptions.HttpClientError
 import com.seitenbau.servicekommune.trackingserver.handlers.AbstractTrackingServerHandler
 import groovy.sql.Sql
 import org.mindrot.jbcrypt.BCrypt
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import ratpack.groovy.handling.GroovyContext
 
 import java.sql.SQLIntegrityConstraintViolationException
 
 class AddUserHandler extends AbstractTrackingServerHandler {
+
+  Logger logger = LoggerFactory.getLogger(this.class)
+
   @Override
   protected void handle(GroovyContext context) {
     String username = context.request.queryParams.get("username")
@@ -34,6 +39,7 @@ class AddUserHandler extends AbstractTrackingServerHandler {
       createUser(username, passwordCleartext, isAdmin.toBoolean())
       context.response.status(201)
       context.render("User created.")
+      logger.info("New user '$username' created.")
     } catch (UsernameTooLongException ignored) {
       throw new HttpClientError("Username '$username' is longer than the allowed 191 characters.", 400)
     } catch (PasswordEmptyException ignored) {

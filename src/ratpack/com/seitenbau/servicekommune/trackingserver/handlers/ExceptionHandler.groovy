@@ -1,12 +1,16 @@
 package com.seitenbau.servicekommune.trackingserver.handlers
 
 import com.seitenbau.servicekommune.trackingserver.exceptions.HttpClientError
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import ratpack.error.ServerErrorHandler
 import ratpack.handling.Context
 
 import static ratpack.jackson.Jackson.json
 
 class ExceptionHandler implements ServerErrorHandler {
+  Logger logger = LoggerFactory.getLogger(this.class)
+
   @Override
   void error(Context context, Throwable throwable) throws Exception {
     switch (throwable.class) {
@@ -23,7 +27,7 @@ class ExceptionHandler implements ServerErrorHandler {
         break
       default:
         // Unexpected error.
-        throwable.printStackTrace()
+        logger.error("Unexpected error occurred.", throwable)
         context.response.status(500)
         context.render(json([
                 "errorType"   : "Server error",

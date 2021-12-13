@@ -5,6 +5,8 @@ import com.seitenbau.servicekommune.trackingserver.handlers.users.EditUserHandle
 import com.seitenbau.servicekommune.trackingserver.handlers.users.GetUserHandler
 import com.seitenbau.servicekommune.trackingserver.handlers.users.GetUsersHandler
 import org.flywaydb.core.Flyway
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import ratpack.handling.Context
 import ratpack.http.MutableHeaders
 
@@ -12,6 +14,9 @@ import java.lang.reflect.Field
 import java.nio.file.Files
 
 import static ratpack.groovy.Groovy.ratpack
+
+Logger logger = LoggerFactory.getLogger(this.class)
+logger.info("Initiating Ratpack main class...")
 
 // Check required database config variables
 List<String> requiredDbConfigValues = ["DB_URL", "DB_USERNAME", "DB_PASSWORD", "DB_DRIVER"]
@@ -133,4 +138,4 @@ ratpack {
   }
 }
 
-println("Serviceportal Tracking Server is up and running! ✅")
+logger.info("Serviceportal Tracking Server Main Class configured. ✅")

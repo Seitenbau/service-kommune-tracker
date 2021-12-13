@@ -6,10 +6,14 @@ import com.seitenbau.servicekommune.trackingserver.handlers.AbstractTrackingServ
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.mindrot.jbcrypt.BCrypt
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import ratpack.groovy.handling.GroovyContext
 import ratpack.jackson.Jackson
 
 class EditUserHandler extends AbstractTrackingServerHandler {
+  Logger logger = LoggerFactory.getLogger(this.class)
+
   @Override
   protected void handle(GroovyContext context) {
     String username = context.allPathTokens."username"
@@ -81,6 +85,7 @@ class EditUserHandler extends AbstractTrackingServerHandler {
 
     context.response.status(200)
     context.render(Jackson.json([status: "Success", changes: changeLog]))
+    logger.info("User '$username' changed. Changelog: ${changeLog.join("; ")}")
   }
 
   private static void updatePassword(String newPasswordCleartext, String username) {
