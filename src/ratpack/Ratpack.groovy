@@ -7,6 +7,7 @@ import com.seitenbau.servicekommune.trackingserver.handlers.users.GetUsersHandle
 import org.flywaydb.core.Flyway
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import ratpack.error.ClientErrorHandler
 import ratpack.handling.Context
 import ratpack.http.MutableHeaders
 
@@ -53,6 +54,7 @@ if (ServerConfig.SET_UP_TEST_DATA) {
 ratpack {
   bindings {
     bind(ExceptionHandler) // custom exception handler
+    bindInstance(ClientErrorHandler, new CustomClientErrorHandler())
   }
 
   handlers {

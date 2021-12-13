@@ -15,6 +15,9 @@ class ExceptionHandler implements ServerErrorHandler {
   void error(Context context, Throwable throwable) throws Exception {
     switch (throwable.class) {
       case HttpClientError:
+        // Using a custom "HttpClientError" Exception is not suggested Ratpack way to handle user
+        // errors (that would be context.clientError()), but it allows us to attach a custom message
+        // directly in the handler. So we do just that.
         HttpClientError badRequestException = (HttpClientError) throwable
         context.response.status(badRequestException.responseStatusCode)
         if (badRequestException.responseStatusCode == 401) {
