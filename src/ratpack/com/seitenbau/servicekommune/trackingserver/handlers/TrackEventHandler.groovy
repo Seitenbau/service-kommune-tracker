@@ -40,11 +40,15 @@ class TrackEventHandler extends AbstractTrackingServerHandler {
 
     // Store result in database
     Sql sql = ServerConfig.getNewSqlConnection()
-    sql.execute("INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`, `userId`) VALUES (?, ?, ?, ?)",
-            [processId, eventId, processInstanceId, userId])
-    sql.commit()
+    try {
+      sql.execute("INSERT INTO trackedEvents (`processId`, `eventId`, `processInstanceId`, `userId`) VALUES (?, ?, ?, ?)",
+              [processId, eventId, processInstanceId, userId])
+      sql.commit()
 
-    ctx.response.status(201)
-    ctx.response.send() // No further content
+      ctx.response.status(201)
+      ctx.response.send() // No further content
+    } finally {
+      sql.close()
+    }
   }
 }

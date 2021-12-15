@@ -17,37 +17,41 @@ class AllProcessesHandler extends AbstractTrackingServerHandler {
 
     // get data from database
     Sql sql = ServerConfig.getNewSqlConnection()
-    String selectStatement = """\
-      SELECT e.`processId`, COUNT(*) as numberOfTrackedEvents, MAX(e.`timestamp`) as lastTrackedEvent, MIN(e.`timestamp`) as firstTrackedEvent 
-        FROM `trackedEvents` as e 
-        GROUP BY e.processId;"""
-    List<GroovyRowResult> rowsOfEvents = sql.rows(selectStatement)
-    rowsOfEvents.each { dbEvent ->
-      ReturnDto currentDto = new ReturnDto()
+    try {
+      String selectStatement = """\
+        SELECT e.`processId`, COUNT(*) as numberOfTrackedEvents, MAX(e.`timestamp`) as lastTrackedEvent, MIN(e.`timestamp`) as firstTrackedEvent 
+          FROM `trackedEvents` as e 
+          GROUP BY e.processId;"""
+      List<GroovyRowResult> rowsOfEvents = sql.rows(selectStatement)
+      rowsOfEvents.each { dbEvent ->
+        ReturnDto currentDto = new ReturnDto()
 
-      currentDto.processId = dbEvent."processId"
-      currentDto.numberOfTrackedEvents = dbEvent."numberOfTrackedEvents"
-      currentDto.firstTrackedEventRelative = new PrettyTime().format(dbEvent."firstTrackedEvent" as Timestamp)
-      currentDto.lastTrackedEventRelative = new PrettyTime().format(dbEvent."lastTrackedEvent" as Timestamp)
+        currentDto.processId = dbEvent."processId"
+        currentDto.numberOfTrackedEvents = dbEvent."numberOfTrackedEvents"
+        currentDto.firstTrackedEventRelative = new PrettyTime().format(dbEvent."firstTrackedEvent" as Timestamp)
+        currentDto.lastTrackedEventRelative = new PrettyTime().format(dbEvent."lastTrackedEvent" as Timestamp)
 
-      // Doing sql queries in a loop is probably not the most efficient way, but neither is
-      // optimizing it prematurely and spending developer time.
-      String selectPermissionsStatement = """\
-       SELECT `username` 
-         FROM `permissions` p
-         WHERE `processId` = ?;"""
-      List<GroovyRowResult> rowsOfPermissions = sql.rows(selectPermissionsStatement, [currentDto.processId])
-      currentDto.usersWithAccess = rowsOfPermissions.collect { it."username" }
+        // Doing sql queries in a loop is probably not the most efficient way, but neither is
+        // optimizing it prematurely and spending developer time.
+        String selectPermissionsStatement = """\
+         SELECT `username` 
+           FROM `permissions` p
+           WHERE `processId` = ?;"""
+        List<GroovyRowResult> rowsOfPermissions = sql.rows(selectPermissionsStatement, [currentDto.processId])
+        currentDto.usersWithAccess = rowsOfPermissions.collect { it."username" }
 
-      result.add(currentDto)
+        result.add(currentDto)
+      }
+
+      // Sort by name
+      result = result.sort { it.processId }
+
+      // Render results
+      ctx.render(json(result))
+      ctx.response.status(200)
+    } finally {
+      sql.close()
     }
-
-    // Sort by name
-    result = result.sort { it.processId }
-
-    // Render results
-    ctx.render(json(result))
-    ctx.response.status(200)
 
   }
 

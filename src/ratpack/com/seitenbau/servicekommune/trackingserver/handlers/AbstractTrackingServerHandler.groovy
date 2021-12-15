@@ -28,16 +28,19 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
 
     // Check permissions
     Sql sql = ServerConfig.getNewSqlConnection()
-    String getPermissionsStatement = "SELECT 1 FROM permissions WHERE `username` = ? AND `processId` = ?"
-    int resultSize = sql.rows(getPermissionsStatement, [username, processId]).size()
-    if (resultSize == 0) {
-      // No results --> No fitting permission!
-      ctx.response.status(403)
-      ctx.render(json(["errorMsg": "Authorization failed. User '$username' is not allowed to access process '$processId'.".toString()]))
-      return false
+    try {
+      String getPermissionsStatement = "SELECT 1 FROM permissions WHERE `username` = ? AND `processId` = ?"
+      int resultSize = sql.rows(getPermissionsStatement, [username, processId]).size()
+      if (resultSize == 0) {
+        // No results --> No fitting permission!
+        ctx.response.status(403)
+        ctx.render(json(["errorMsg": "Authorization failed. User '$username' is not allowed to access process '$processId'.".toString()]))
+        return false
+      }
+      return true
+    } finally {
+      sql.close()
     }
-
-    return true
   }
 
   static Tuple<String> getUsernameAndPasswordFromHeaders(Context ctx) {
@@ -70,16 +73,20 @@ abstract class AbstractTrackingServerHandler extends GroovyHandler {
   static void verifyUser(Context ctx, String username, String password) {
     // Check if the password matches the user
     Sql sql = ServerConfig.getNewSqlConnection()
-    String getPasswordStatement = "SELECT `bcryptPassword` FROM users WHERE username = ?"
-    GroovyRowResult result = sql.firstRow(getPasswordStatement, [username])
-    if (result == null) {
-      throw new HttpClientError("Authentication failed. User not found.", 401)
-    }
-    String storedPassword = new String(result.get("bcryptPassword") as byte[])
-    if (BCrypt.checkpw(password, storedPassword)) {
-      // PW okay!
-    } else {
-      throw new HttpClientError("Authentication failed. Wrong password.", 401)
+    try {
+      String getPasswordStatement = "SELECT `bcryptPassword` FROM users WHERE username = ?"
+      GroovyRowResult result = sql.firstRow(getPasswordStatement, [username])
+      if (result == null) {
+        throw new HttpClientError("Authentication failed. User not found.", 401)
+      }
+      String storedPassword = new String(result.get("bcryptPassword") as byte[])
+      if (BCrypt.checkpw(password, storedPassword)) {
+        // PW okay!
+      } else {
+        throw new HttpClientError("Authentication failed. Wrong password.", 401)
+      }
+    } finally {
+      sql.close()
     }
   }
 
