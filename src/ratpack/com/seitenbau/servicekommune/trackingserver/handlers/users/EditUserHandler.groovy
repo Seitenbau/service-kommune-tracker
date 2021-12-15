@@ -21,71 +21,75 @@ class EditUserHandler extends AbstractTrackingServerHandler {
 
     // Verify user exists
     Sql sql = ServerConfig.getNewSqlConnection()
-    GroovyRowResult row = sql.firstRow("SELECT COUNT(*) AS count FROM `users` WHERE `username`= ?", [username])
-    if (row."count" == 0) throw new HttpClientError("User with username '$username' was not found.", 404)
+    try {
+      GroovyRowResult row = sql.firstRow("SELECT COUNT(*) AS count FROM `users` WHERE `username`= ?", [username])
+      if (row."count" == 0) throw new HttpClientError("User with username '$username' was not found.", 404)
 
 
-    List<String> changeLog = []
+      List<String> changeLog = []
 
-    // Updating password
-    String newPasswordCleartext = context.request.queryParams.get("newPassword")
-    if (newPasswordCleartext != null && newPasswordCleartext.isEmpty()) throw new HttpClientError("New password must not be empty.", 400)
-    if (newPasswordCleartext) {
-      updatePassword(newPasswordCleartext, username)
-      changeLog.add("Password was updated.")
+      // Updating password
+      String newPasswordCleartext = context.request.queryParams.get("newPassword")
+      if (newPasswordCleartext != null && newPasswordCleartext.isEmpty()) throw new HttpClientError("New password must not be empty.", 400)
+      if (newPasswordCleartext) {
+        updatePassword(newPasswordCleartext, username)
+        changeLog.add("Password was updated.")
+      }
+
+      // Updating admin status
+      String isAdmin = context.request.queryParams.get("isAdmin")
+      if (isAdmin != null) {
+        if (isAdmin == "true" || isAdmin == "false") {
+          // valid values
+          boolean newValue = isAdmin.toBoolean()
+          int affectedRows = sql.executeUpdate("UPDATE `users` SET `isAdmin` = ? WHERE username = ?", [newValue, username])
+          assert affectedRows == 1
+          changeLog.add("Admin status was set to ${newValue}.".toString())
+        } else {
+          throw new HttpClientError("Parameter 'isAdmin' has invalid value '$isAdmin'", 400)
+        }
+      }
+
+      // Adding a permission
+      String permissionToAdd = context.request.queryParams.get("addPermission")
+      if (permissionToAdd != null) {
+        if (permissionToAdd.isEmpty() || permissionToAdd.isAllWhitespace()) {
+          throw new HttpClientError("addPermission must not be empty", 400)
+        }
+
+        try {
+          addPermission(username, permissionToAdd)
+          changeLog.add("Added permission for process '$permissionToAdd'.".toString())
+        } catch (PermissionAlreadyExistsException ignored) {
+          changeLog.add("Permission for process '$permissionToAdd' was already given.".toString())
+        }
+      }
+
+      // Removing a permission
+      String permissionToRemove = context.request.queryParams.get("removePermission")
+      if (permissionToRemove != null) {
+        if (permissionToRemove.isEmpty() || permissionToRemove.isAllWhitespace()) {
+          throw new HttpClientError("permissionToRemove must not be empty", 400)
+        }
+
+        boolean wasRemoved = removePermission(username, permissionToRemove)
+        if (wasRemoved) {
+          changeLog.add("Permission for process '$permissionToRemove' was removed.".toString())
+        } else {
+          changeLog.add(("Permission for process '$permissionToRemove' was not given in the first " +
+                  "place and therefore doesn't need to be removed.").toString())
+        }
+      }
+
+      sql.commit()
+      sql.close()
+
+      context.response.status(200)
+      context.render(Jackson.json([status: "Success", changes: changeLog]))
+      logger.info("User '$username' changed. Changelog: ${changeLog.join("; ")}")
+    } finally {
+      sql.close()
     }
-
-    // Updating admin status
-    String isAdmin = context.request.queryParams.get("isAdmin")
-    if (isAdmin != null) {
-      if (isAdmin == "true" || isAdmin == "false") {
-        // valid values
-        boolean newValue = isAdmin.toBoolean()
-        int affectedRows = sql.executeUpdate("UPDATE `users` SET `isAdmin` = ? WHERE username = ?", [newValue, username])
-        assert affectedRows == 1
-        changeLog.add("Admin status was set to ${newValue}.".toString())
-      } else {
-        throw new HttpClientError("Parameter 'isAdmin' has invalid value '$isAdmin'", 400)
-      }
-    }
-
-    // Adding a permission
-    String permissionToAdd = context.request.queryParams.get("addPermission")
-    if (permissionToAdd != null) {
-      if (permissionToAdd.isEmpty() || permissionToAdd.isAllWhitespace()) {
-        throw new HttpClientError("addPermission must not be empty", 400)
-      }
-
-      try {
-        addPermission(username, permissionToAdd)
-        changeLog.add("Added permission for process '$permissionToAdd'.".toString())
-      } catch (PermissionAlreadyExistsException ignored) {
-        changeLog.add("Permission for process '$permissionToAdd' was already given.".toString())
-      }
-    }
-
-    // Removing a permission
-    String permissionToRemove = context.request.queryParams.get("removePermission")
-    if (permissionToRemove != null) {
-      if (permissionToRemove.isEmpty() || permissionToRemove.isAllWhitespace()) {
-        throw new HttpClientError("permissionToRemove must not be empty", 400)
-      }
-
-      boolean wasRemoved = removePermission(username, permissionToRemove)
-      if (wasRemoved) {
-        changeLog.add("Permission for process '$permissionToRemove' was removed.".toString())
-      } else {
-        changeLog.add(("Permission for process '$permissionToRemove' was not given in the first " +
-                "place and therefore doesn't need to be removed.").toString())
-      }
-    }
-
-    sql.commit()
-    sql.close()
-
-    context.response.status(200)
-    context.render(Jackson.json([status: "Success", changes: changeLog]))
-    logger.info("User '$username' changed. Changelog: ${changeLog.join("; ")}")
   }
 
   private static void updatePassword(String newPasswordCleartext, String username) {
@@ -141,6 +145,7 @@ class EditUserHandler extends AbstractTrackingServerHandler {
     Sql sql = ServerConfig.getNewSqlConnection()
 
     sql.execute("DELETE FROM `permissions` WHERE `username` = ? AND `processId` = ?", [username, permissionToRemove])
+    sql.close()
 
     assert sql.updateCount == 0 || sql.updateCount == 1
 

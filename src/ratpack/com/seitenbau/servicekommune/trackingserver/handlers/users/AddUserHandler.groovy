@@ -74,6 +74,8 @@ class AddUserHandler extends AbstractTrackingServerHandler {
       sql.commit()
     } catch (SQLIntegrityConstraintViolationException ignored) {
       throw new UsernameAlreadyExistsException()
+    } finally {
+      sql.close()
     }
   }
 

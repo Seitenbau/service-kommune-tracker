@@ -31,23 +31,27 @@ class SumForProcessAndEventHandler extends AbstractTrackingServerHandler {
 
     // get count from database
     Sql sql = ServerConfig.getNewSqlConnection()
-    String selectStatement = """SELECT COUNT(*) as amountTrackedEvent
-              FROM trackedEvents
-              WHERE `processId` = ?
-                AND `eventId`   = ?"""
-    List filterValues = [processId, eventId]
-    if (timeFrom != null) {
-      selectStatement += " AND `timestamp` >= FROM_UNIXTIME(?)"
-      filterValues.add(timeFrom.toString())
-    }
-    if (timeUntil != null) {
-      selectStatement += " AND `timestamp` <= FROM_UNIXTIME(?)"
-      filterValues.add(timeUntil.toString())
-    }
-    GroovyRowResult row = sql.firstRow(selectStatement, filterValues)
+    try {
+      String selectStatement = """SELECT COUNT(*) as amountTrackedEvent
+                FROM trackedEvents
+                WHERE `processId` = ?
+                  AND `eventId`   = ?"""
+      List filterValues = [processId, eventId]
+      if (timeFrom != null) {
+        selectStatement += " AND `timestamp` >= FROM_UNIXTIME(?)"
+        filterValues.add(timeFrom.toString())
+      }
+      if (timeUntil != null) {
+        selectStatement += " AND `timestamp` <= FROM_UNIXTIME(?)"
+        filterValues.add(timeUntil.toString())
+      }
+      GroovyRowResult row = sql.firstRow(selectStatement, filterValues)
 
-    // return result to user
-    ctx.response.status(200)
-    ctx.render(json(row.get("amountTrackedEvent")))
+      // return result to user
+      ctx.response.status(200)
+      ctx.render(json(row.get("amountTrackedEvent")))
+    } finally {
+      sql.close()
+    }
   }
 }

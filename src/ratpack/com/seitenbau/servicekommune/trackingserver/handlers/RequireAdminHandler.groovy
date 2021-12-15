@@ -18,15 +18,19 @@ class RequireAdminHandler extends AbstractTrackingServerHandler {
 
     // Check if user is admin
     Sql sql = ServerConfig.getNewSqlConnection()
-    String getPermissionsStatement = "SELECT `isAdmin` FROM users WHERE username = ?"
-    List<GroovyRowResult> rows = sql.rows(getPermissionsStatement, [username])
-    assert rows.size() == 1
-    if (rows[0]."isAdmin" == false) {
-      logger.warn("Authorization failed. User '$username' tried to access URL protected by RequireAdminHandler.")
-      throw new HttpClientError("Authorization failed. User '$username' is not an admin.", 403)
-    } else {
-      // User is admin, so we delegate to the next handler.
-      context.next()
+    try {
+      String getPermissionsStatement = "SELECT `isAdmin` FROM users WHERE username = ?"
+      List<GroovyRowResult> rows = sql.rows(getPermissionsStatement, [username])
+      assert rows.size() == 1
+      if (rows[0]."isAdmin" == false) {
+        logger.warn("Authorization failed. User '$username' tried to access URL protected by RequireAdminHandler.")
+        throw new HttpClientError("Authorization failed. User '$username' is not an admin.", 403)
+      } else {
+        // User is admin, so we delegate to the next handler.
+        context.next()
+      }
+    } finally {
+      sql.close()
     }
 
   }
