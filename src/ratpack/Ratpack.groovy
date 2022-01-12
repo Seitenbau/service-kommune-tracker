@@ -107,6 +107,10 @@ ratpack {
             get(new SumsForProcessHandler())
             // Getting the sums of all tracked events for a given processId
           }
+
+          prefix("flow") {
+            get(new ProcessFlowHandler())
+          }
         }
       }
 
