@@ -47,8 +47,6 @@ class ProcessFlowHandler extends AbstractTrackingServerHandler {
       selectStatement += "ORDER BY `processInstanceId` ASC, `timestamp` ASC"
       List<GroovyRowResult> rows = sql.rows(selectStatement, filterValues)
 
-      // TODO: Timestamp only has a seconds-based resolution. Can we improve that somehow?
-
       // extract flows
       Map<String, List<String>> flows = [:]
       rows.each { row ->
