@@ -123,7 +123,14 @@ class ProcessFlowJsonHandler extends AbstractTrackingServerHandler {
             return // skip ending events
           }
 
-          Link link = new Link(precedingEventId, followingEventId, count)
+          // Generate random color, seeded by the links name.
+          Random rng = new Random((precedingEventId + followingEventId).hashCode().toLong())
+          // We want values in a certain range.
+          int base = 150
+          int range = 50
+          String color = "rgb(${base + rng.nextInt(range)}, ${base + rng.nextInt(range)}, ${base + rng.nextInt(range)})"
+
+          Link link = new Link(precedingEventId, followingEventId, count, color)
           jsonSankeyData.links.add(link)
         }
       }
@@ -144,11 +151,13 @@ class ProcessFlowJsonHandler extends AbstractTrackingServerHandler {
     String source
     String target
     int value
+    String color
 
-    Link(String source, String target, int value) {
+    Link(String source, String target, int value, String color) {
       this.source = source
       this.target = target
       this.value = value
+      this.color = color
     }
   }
 

@@ -110,7 +110,8 @@
     var layout = d3.sankey()
                   .extent([[100, 10], [840, 580]]);
 
-    var diagram = d3.sankeyDiagram();
+    var diagram = d3.sankeyDiagram()
+                  .linkColor(function(d) { return d.color; });
 
     d3.json('jsonPLACEHOLDER_TIME_PARAMS', function(datapoint) {
       //layout.ordering(datapoint.order);
