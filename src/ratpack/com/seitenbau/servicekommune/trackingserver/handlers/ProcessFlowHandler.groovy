@@ -91,11 +91,53 @@ class ProcessFlowHandler extends AbstractTrackingServerHandler {
         }
       }
 
+      // Generate JSON Sankey data
+      JsonSankeyData jsonSankeyData = new JsonSankeyData()
+      uniqueEvents.each { eventId ->
+        jsonSankeyData.nodes.add(new Node(eventId))
+      }
+      eventsAndFollowingEvents.each { precedingEventId, followingEvents ->
+        followingEvents.each { followingEventId, count ->
+          if (followingEventId == NO_FURTHER_EVENT){
+            return // skip ending events
+          }
+
+          Link link = new Link(precedingEventId, followingEventId, count)
+          jsonSankeyData.links.add(link)
+        }
+      }
+
       // return result to user
       ctx.response.status(200)
-      ctx.render(json(eventsAndFollowingEvents))
+      ctx.render(json(jsonSankeyData))
     } finally {
       sql.close()
     }
   }
+
+  class JsonSankeyData {
+    List<Node> nodes = []
+    List<Link> links = []
+  }
+
+  class Link {
+    String source
+    String target
+    int value
+
+    Link(String source, String target, int value) {
+      this.source = source
+      this.target = target
+      this.value = value
+    }
+  }
+
+  class Node {
+    String id
+
+    Node(String id) {
+      this.id = id
+    }
+  }
+
 }
