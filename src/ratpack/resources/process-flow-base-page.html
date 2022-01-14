@@ -4,6 +4,41 @@
   <meta charset="utf-8">
   <title>Prozessflow für PLACEHOLDER_PROCESS_ID - Serviceportal Tracking Server</title>
   <style>
+    html {
+      overflow-x: hidden;
+    }
+
+    body {
+      background-color: #eeeeee;
+      margin: 0 auto 4em auto;
+      width: 1024px;
+      color: #333;
+    }
+
+    h1 {
+      font-weight: normal;
+      font-size: 2.5em;
+    }
+
+    h2 {
+      margin-top: 2.5em;
+    }
+
+    a {
+      color: #4078c0;
+      text-decoration: none;
+    }
+
+    a:hover, a:active {
+      text-decoration: underline;
+    }
+
+    .sankey {
+      background-color: white;
+      border-radius: 7px;
+      position: relative;
+    }
+
     .sankey {
       background-color: white;
       border-radius: 7px;
@@ -27,9 +62,36 @@
       color: #558;
     }
 
+    svg .link {
+      opacity: 0.8;
+      fill: steelblue;
+    }
 
+    svg .link:hover {
+      opacity: 1;
+    }
 
+    svg g.sankey {
+      font-size: 10pt;
+    }
+    svg .node line {
+      stroke-width: 1px;
+      stroke: #000;
+    }
+    svg .node-type-process line {
+      stroke-width: 4px;
+      stroke: #888;
+    }
 
+    svg .group rect {
+      fill: #eee;
+      stroke: #bbb;
+      stroke-width: 0.5px;
+    }
+
+    svg .group text {
+      fill: #999;
+    }
   </style>
 </head>
 <body>
