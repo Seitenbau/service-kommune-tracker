@@ -109,7 +109,12 @@ ratpack {
           }
 
           prefix("flow") {
-            get(new ProcessFlowHandler())
+            prefix("json") {
+              get(new ProcessFlowJsonHandler())
+            }
+            prefix("html") {
+              get(new ProcessFlowHtmlHandler())
+            }
           }
         }
       }
@@ -138,6 +143,13 @@ ratpack {
               }
             }
           }
+        }
+      }
+
+      prefix("static") {
+        get("d3-sankey.js") { ctx ->
+          ctx.response.contentType("text/javascript")
+          ctx.render(new String(Files.readAllBytes(ctx.file("resources/d3-sankey-diagram.js"))))
         }
       }
     }

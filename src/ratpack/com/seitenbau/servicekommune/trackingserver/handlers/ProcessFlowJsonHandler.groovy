@@ -7,7 +7,7 @@ import ratpack.groovy.handling.GroovyContext
 
 import static ratpack.jackson.Jackson.json
 
-class ProcessFlowHandler extends AbstractTrackingServerHandler {
+class ProcessFlowJsonHandler extends AbstractTrackingServerHandler {
   private final String NO_FURTHER_EVENT = "SPECIAL_IDENTIFIER_FOR_NO_FURTHER_EVENTS_IN_THIS_FLOW"
 
   @Override
@@ -31,6 +31,26 @@ class ProcessFlowHandler extends AbstractTrackingServerHandler {
       return
     }
 
+    JsonSankeyData jsonSankeyData = generateJsonSankeyData(processId, timeFrom, timeUntil)
+
+    // return result to user
+    ctx.response.status(200)
+    ctx.render(json(jsonSankeyData))
+  }
+
+  /**
+   * Generates a structure that can be fed into a d3-sankey-diagram
+   * (see https://ricklupton.github.io/d3-sankey-diagram/)
+   *
+   * @param processId The processId for which to generate the diagram
+   * @param timeFrom A UNIX timestamp marking the point in time when events are included in the result (inclusive).
+   *     If missing, all events are included (as long as they are not filtered by another parameter)
+   * @param timeUntil A UNIX timestamp marking the point in time when events are no longer included in the result.
+   *    If missing, all events are included (as long as they are not filtered by another parameter)
+   *
+   * @return
+   */
+  private JsonSankeyData generateJsonSankeyData(String processId, Integer timeFrom, Integer timeUntil) {
     // get data from database
     Sql sql = ServerConfig.getNewSqlConnection()
     try {
@@ -98,7 +118,7 @@ class ProcessFlowHandler extends AbstractTrackingServerHandler {
       }
       eventsAndFollowingEvents.each { precedingEventId, followingEvents ->
         followingEvents.each { followingEventId, count ->
-          if (followingEventId == NO_FURTHER_EVENT){
+          if (followingEventId == NO_FURTHER_EVENT) {
             return // skip ending events
           }
 
@@ -107,9 +127,8 @@ class ProcessFlowHandler extends AbstractTrackingServerHandler {
         }
       }
 
-      // return result to user
-      ctx.response.status(200)
-      ctx.render(json(jsonSankeyData))
+      return jsonSankeyData
+
     } finally {
       sql.close()
     }

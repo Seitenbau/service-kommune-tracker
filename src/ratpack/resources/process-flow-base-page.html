@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Prozessflow für PLACEHOLDER_PROCESS_ID - Serviceportal Tracking Server</title>
+  <style>
+    .sankey {
+      background-color: white;
+      border-radius: 7px;
+      position: relative;
+    }
+
+    #sankey {
+      height: 600px;
+    }
+
+    .source {
+      margin: 0.5em;
+      font-size: small;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      color: #555;
+    }
+
+    .source a {
+      color: #558;
+    }
+
+
+
+
+  </style>
+</head>
+<body>
+<h1>Prozessflow für PLACEHOLDER_PROCESS_ID</h1>
+
+<div id="sankey" class="sankey">
+  <svg width="1000" height="600"></svg>
+  <p class="source">Erstellt mit <a href="https://github.com/ricklupton/d3-sankey-diagram">d3-sankey-diagram</a>.
+    <a href="https://github.com/ricklupton/d3-sankey-diagram/blob/master/LICENSE">MIT Licence</a>.
+  </p>
+</div>
+
+<script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<!-- TODO: Upgrade to https://d3js.org/d3.v7.min.js ?? -->
+<script src="/api/v1.0/static/d3-sankey.js" charset="utf-8"></script>
+<script>
+    var layout = d3.sankey()
+                  .extent([[100, 10], [840, 580]]);
+
+    var diagram = d3.sankeyDiagram()
+                    .linkTitle(d3.sankeyLinkTitle(function (d) { return d.title; },
+                                                  function(d) { return d.title; },
+                                                  d3.format('.3s')))
+                    .linkColor(function(d) { return d.color; });
+
+    d3.json('json', function(datapoint) {
+      //layout.ordering(datapoint.order);
+      var el = d3.select('#sankey svg')
+                .datum(layout(datapoint))
+                .call(diagram.groups(datapoint.groups));
+    });
+</script>
+</body>
+</html>
