@@ -117,7 +117,7 @@
                                                   d3.format('.3s')))
                     .linkColor(function(d) { return d.color; });
 
-    d3.json('json', function(datapoint) {
+    d3.json('jsonPLACEHOLDER_TIME_PARAMS', function(datapoint) {
       //layout.ordering(datapoint.order);
       var el = d3.select('#sankey svg')
                 .datum(layout(datapoint))

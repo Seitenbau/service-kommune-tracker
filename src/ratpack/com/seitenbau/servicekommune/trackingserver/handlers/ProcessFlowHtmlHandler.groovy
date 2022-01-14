@@ -27,9 +27,27 @@ class ProcessFlowHtmlHandler extends AbstractTrackingServerHandler {
       return
     }
 
+    // Setup result html
     ctx.response.contentType("text/html")
     String html = new String(Files.readAllBytes(ctx.file("resources/process-flow-base-page.html")))
+
+    // Render placeholder "PLACEHOLDER_PROCESS_ID"
     html = html.replaceAll("PLACEHOLDER_PROCESS_ID", processId)
+
+    // Render placeholder "PLACEHOLDER_TIME_PARAMS"
+    String timeParams = ""
+    if (timeFrom != null && timeUntil == null) {
+      timeParams += "?timeFrom=$timeFrom"
+    }
+    if (timeFrom == null && timeUntil != null) {
+      timeParams += "?timeUntil=$timeUntil"
+    }
+    if (timeFrom != null && timeUntil != null) {
+      timeParams += "?timeFrom=$timeFrom&timeUntil=$timeUntil"
+    }
+    html = html.replaceAll("PLACEHOLDER_TIME_PARAMS", timeParams)
+
+    // Send result to user
     ctx.render(html)
   }
 }
