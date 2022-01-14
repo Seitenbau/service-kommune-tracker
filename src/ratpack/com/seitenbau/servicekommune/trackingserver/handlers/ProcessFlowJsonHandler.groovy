@@ -3,12 +3,16 @@ package com.seitenbau.servicekommune.trackingserver.handlers
 import com.seitenbau.servicekommune.trackingserver.ServerConfig
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import ratpack.groovy.handling.GroovyContext
 
 import static ratpack.jackson.Jackson.json
 
 class ProcessFlowJsonHandler extends AbstractTrackingServerHandler {
   private final String NO_FURTHER_EVENT = "SPECIAL_IDENTIFIER_FOR_NO_FURTHER_EVENTS_IN_THIS_FLOW"
+
+  Logger logger = LoggerFactory.getLogger(this.class)
 
   @Override
   protected void handle(GroovyContext ctx) {
@@ -51,7 +55,9 @@ class ProcessFlowJsonHandler extends AbstractTrackingServerHandler {
    * @return
    */
   private JsonSankeyData generateJsonSankeyData(String processId, Integer timeFrom, Integer timeUntil) {
-    // TODO: Benchmark this function call and log execution time as it might be rather complex.
+    // benchmark this call as the execution time might grow for large processes
+    long startTime = System.currentTimeMillis()
+
     // get data from database
     Sql sql = ServerConfig.getNewSqlConnection()
     try {
@@ -134,6 +140,9 @@ class ProcessFlowJsonHandler extends AbstractTrackingServerHandler {
           jsonSankeyData.links.add(link)
         }
       }
+
+      long endTime = System.currentTimeMillis()
+      logger.info("Process flow analysis for process '$processId' took ${endTime - startTime} ms.")
 
       return jsonSankeyData
 
