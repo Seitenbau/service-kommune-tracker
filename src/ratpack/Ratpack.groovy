@@ -153,6 +153,11 @@ ratpack {
         }
       }
     }
+
+    get("favicon.ico") { Context ctx ->
+      ctx.response.contentType("image/x-icon")
+      ctx.response.send(Files.readAllBytes(ctx.file("resources/favicon.ico")))
+    } // favicon
   }
 }
 

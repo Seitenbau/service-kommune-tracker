@@ -51,6 +51,7 @@ class ProcessFlowJsonHandler extends AbstractTrackingServerHandler {
    * @return
    */
   private JsonSankeyData generateJsonSankeyData(String processId, Integer timeFrom, Integer timeUntil) {
+    // TODO: Benchmark this function call and log execution time as it might be rather complex.
     // get data from database
     Sql sql = ServerConfig.getNewSqlConnection()
     try {
