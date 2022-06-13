@@ -151,6 +151,10 @@ ratpack {
           ctx.response.contentType("text/javascript")
           ctx.render(new String(Files.readAllBytes(ctx.file("resources/d3-sankey-diagram.js"))))
         }
+        get("sankey_example.png") { ctx ->
+          ctx.response.contentType("image/png")
+          ctx.response.send(Files.readAllBytes(ctx.file("resources/sankey_example.png")))
+        }
       }
     }
 

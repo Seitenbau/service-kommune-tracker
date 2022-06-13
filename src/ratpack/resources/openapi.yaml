@@ -191,7 +191,7 @@ paths:
         - Getting infos about events
       responses:
         200:
-          description: All tracked events and how often that event was tracled
+          description: All tracked events and how often that event was tracked
           content:
             application/json:
               schema:
@@ -258,6 +258,87 @@ paths:
                   userId: null
         400:
           $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/AuthenticationFailed'
+        403:
+          $ref: '#/components/responses/AuthorizationFailed'
+  "/api/v1.0/processes/{processId}/flow/html":
+    get:
+      summary: Get a HTML page displaying a sankey diagram of the process's flow
+      parameters:
+        - $ref: '#/components/parameters/processId'
+        - $ref: '#/components/parameters/timeFrom'
+        - $ref: '#/components/parameters/timeUntil'
+      tags:
+        - Getting infos about events
+      responses:
+        200:
+          description: >-
+            A HTML page, embedding a <a target="_blank" rel="noopener noreferrer" 
+            href="https://github.com/ricklupton/d3-sankey-diagram">d3-sankey-diagram</a> and the
+            data from the /api/v1.0/processes/{processId}/flow/json endpoint.<br>
+            The result looks similar to this image:<br>
+            <img alt="Sankey Diagram of a process" src="/api/v1.0/static/sankey_example.png">
+          content:
+            text/html:
+              example: <some HTML/>
+        401:
+          $ref: '#/components/responses/AuthenticationFailed'
+        403:
+          $ref: '#/components/responses/AuthorizationFailed'
+  "/api/v1.0/processes/{processId}/flow/json":
+    get:
+      summary: Get details about how users flow through the different events of a process
+      parameters:
+        - $ref: '#/components/parameters/processId'
+        - $ref: '#/components/parameters/timeFrom'
+        - $ref: '#/components/parameters/timeUntil'
+      tags:
+        - Getting infos about events
+      responses:
+        200:
+          description: >-
+            All tracked events (called "nodes") and the flows between them (called "links") in a 
+            format that can be consumed by <a target="_blank" rel="noopener noreferrer" 
+            href="https://github.com/ricklupton/d3-sankey-diagram">d3-sankey-diagram</a>.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: array
+                    description: "A list of all tracked events"
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: "The name of a specific tracked event"
+                          example: "myInitEvent"
+                  links:
+                    type: array
+                    description: "A list of all flows from a specific start event to a specific end event"
+                    items:
+                      type: object
+                      properties:
+                        source:
+                          type: string
+                          example: "myInitEvent"
+                        target:
+                          type: string
+                          example: "myFollowingEvent"
+                        value:
+                          type: integer
+                          description: "The amount of users that passed through this flow"
+                          example: 5
+                        color:
+                          type: string
+                          description: >-
+                            A semi-random (depending on the name of the start and end event)
+                            rgb-color, each color between 50 and 150. Used by d3-sankey-diagram to
+                            render the graph.
+                          example: "rgb(159, 181, 193)"
         401:
           $ref: '#/components/responses/AuthenticationFailed'
         403:
