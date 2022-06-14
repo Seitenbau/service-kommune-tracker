@@ -6,7 +6,6 @@ info:
     This document describes the Serviceportal Tracking Server API.
     A service useful for tracking various events in Serviceportal processes and to generate various
     reports about these events.
-    <br><br>
   contact:
     name: "SEITENBAU Public Service Team"
     url: "https://www.seitenbau.com/was-wir-koennen/public-service-design"
