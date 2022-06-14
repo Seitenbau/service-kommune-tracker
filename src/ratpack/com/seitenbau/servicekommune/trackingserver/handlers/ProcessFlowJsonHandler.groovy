@@ -16,7 +16,6 @@ class ProcessFlowJsonHandler extends AbstractTrackingServerHandler {
 
   @Override
   protected void handle(GroovyContext ctx) {
-    // TODO: Write OpenAPI Documentation
     // get path parameters
     String processId = ctx.allPathTokens.processId
 
