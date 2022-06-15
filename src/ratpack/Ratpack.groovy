@@ -107,6 +107,15 @@ ratpack {
             get(new SumsForProcessHandler())
             // Getting the sums of all tracked events for a given processId
           }
+
+          prefix("flow") {
+            prefix("json") {
+              get(new ProcessFlowJsonHandler())
+            }
+            prefix("html") {
+              get(new ProcessFlowHtmlHandler())
+            }
+          }
         }
       }
 
@@ -136,7 +145,23 @@ ratpack {
           }
         }
       }
+
+      prefix("static") {
+        get("d3-sankey.js") { ctx ->
+          ctx.response.contentType("text/javascript")
+          ctx.render(new String(Files.readAllBytes(ctx.file("resources/d3-sankey-diagram.js"))))
+        }
+        get("sankey_example.png") { ctx ->
+          ctx.response.contentType("image/png")
+          ctx.response.send(Files.readAllBytes(ctx.file("resources/sankey_example.png")))
+        }
+      }
     }
+
+    get("favicon.ico") { Context ctx ->
+      ctx.response.contentType("image/x-icon")
+      ctx.response.send(Files.readAllBytes(ctx.file("resources/favicon.ico")))
+    } // favicon
   }
 }
 
